@@ -164,3 +164,10 @@ cython_debug/
 *.psf
 *.dcd
 *.pgn
+*restart*
+*.coor
+*.BAK
+*.vel
+*.xsc
+*.pdf
+MD/
