@@ -1,0 +1,3 @@
+[submodule "AIMNet2"]
+	path = AIMNet2
+	url = https://github.com/isayevlab/AIMNet2
