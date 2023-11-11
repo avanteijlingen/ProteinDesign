@@ -171,3 +171,4 @@ cython_debug/
 *.xsc
 *.pdf
 MD/
+*.dat
