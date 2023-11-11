@@ -6,3 +6,5 @@ tad-dftd4
 matplotlib
 torch --index-url https://download.pytorch.org/whl/cu121
 pandas
+torchani
+ase
