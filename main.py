@@ -5,7 +5,7 @@ Created on Fri Nov 10 20:05:38 2023
 @author: Alex
 """
 import MDAnalysis as mda
-import urllib, os, tqdm, subprocess, sys, shutil, copy, re
+import urllib, os, tqdm, subprocess, sys, shutil, copy, re, pandas
 from ase import Atoms
 import numpy as np
 from sklearn.metrics import euclidean_distances
@@ -20,6 +20,7 @@ from AIMNet2.calculators.aimnet2ase import AIMNet2Calculator
 
 # Local libraries
 import contactarea
+import peptideutils as pu 
 
 # =============================================================================
 # https://www.ks.uiuc.edu/Training/Tutorials/namd/FEP/tutorial-FEP.pdf
@@ -170,31 +171,32 @@ class measure_interface:
         Spike_E = self.Spike_ase.get_potential_energy()
         BindingEnergy = (Complex_E - (Receptor_E + Spike_E)) * eV2kcalmol
         self.score["BindingEnergy"] = BindingEnergy
-
-    def MeasureInterface(self):
+        
+    def MeasureInterface(self):       
+        self.MeasureHBonds()
+        self.MeasureBindingEnergy()
+        self.score["contact surface area"] = self.surface_contact.calculate(self.Spike_ase, self.Receptor_ase)
+    
+    def FindInterface(self):
         # First determine which residues are part of the interface
         interface_cutoff = 10.0 # Angstrom, We need to trim these proteins down to just those at the interface to fit the dispersion calculation in memory
         d = euclidean_distances(self.Spike.positions, self.Receptor.positions)
         Spike_interface = self.Spike[d.min(axis=1) < interface_cutoff]
         Receptor_interface = self.Receptor[d.min(axis=0) < interface_cutoff]
-
         # Rebuild the broken residues (some atoms dont pass the cutoff) 
-        spike_resids = " ".join(np.unique(Spike_interface.resids).astype(np.str_))
-        self.Spike_interface = self.Spike.select_atoms(f"resid {spike_resids}")
-        Receptor_resids = " ".join(np.unique(Receptor_interface.resids).astype(np.str_))
-        self.Receptor_interface = self.Receptor.select_atoms(f"resid {Receptor_resids}")
-        mda.Merge(self.Spike_interface, self.Receptor_interface).select_atoms("all").write(f"MD/{self.code}/Interface.pdb")
-        
-        self.MeasureHBonds()
-        
+        #self.spike_resids = " ".join(np.unique(Spike_interface.resids).astype(np.str_))
+        self.spike_resids = self.spike_interface_resids
+        self.Receptor_resids = " ".join(np.unique(Receptor_interface.resids).astype(np.str_))
+
+    def BuildInterface(self):
+        self.Spike_interface = self.Spike.select_atoms(f"resid {self.spike_resids}")
+        self.Receptor_interface = self.Receptor.select_atoms(f"resid {self.Receptor_resids}")
+        #mda.Merge(self.Spike_interface, self.Receptor_interface).select_atoms("all").write(f"MD/{self.code}/Interface.pdb")
         elements = [x[0] for x in self.Spike_interface.names]
         self.Spike_ase = Atoms(elements, self.Spike_interface.positions)
         elements = [x[0] for x in self.Receptor_interface.names]
         self.Receptor_ase = Atoms(elements, self.Receptor_interface.positions)
-        
-        self.MeasureBindingEnergy()
-
-        self.score["contact surface area"] = self.surface_contact.calculate(self.Spike_ase, self.Receptor_ase)
+        self.interface_seq = pu.translate3to1("-".join(self.Spike_interface.residues.resnames))
         
     def load_universe(self):
         self.U = mda.Universe(f"MD/{self.code}/{self.code}_psfgen.psf", f"MD/{self.code}/Minimization.coor")
@@ -203,6 +205,21 @@ class measure_interface:
         self.Receptor = self.U.select_atoms(f"segid {self.receptor_chainID}")
         self.resnames = self.Spike.residues.resnames
     
+    def Mutate(self):
+        sel = np.random.choice(np.arange(len(self.interface_seq)))
+        self.interface_seq = list(self.interface_seq)
+        new_res = self.interface_seq[sel]
+        while new_res == self.interface_seq[sel]:
+            self.interface_seq[sel] = np.random.choice(pu.peptideutils_letters1)
+        self.interface_seq = "".join(self.interface_seq)
+        
+    def MakeMutation(self):
+        self.folder = f"MD/{self.code}_{self.interface_seq}"
+        os.makedirs(self.folder, exist_ok=True)
+        print(len(self.Spike_interface.residues.resnames))
+        print(len(self.interface_seq))
+        self.Spike_interface.residues.resnames = pu.translate1to3(self.interface_seq).split("-")
+        
     def __init__(self, code):
         self.code = code
         #Initialize
@@ -221,6 +238,7 @@ class measure_interface:
 #         print("receptor_chainID:", self.receptor_chainID)
 #         print("spike_chainID:", self.spike_chainID)
 # =============================================================================
+        self.spike_interface_resids = '350 402 403 404 405 406 408 409 416 417 418 419 420 421 422 437 438 439 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 471 472 473 474 475 476 477 478 479 480 481 482 483 484 485 486 487 488 489 490 491 492 493 494 495 496 497 498 499 500 501 502 503 504 505 506 507 508'
         
         # Load AIMNet2 model for energy calculations
         self.AIMNet2_model_file = "AIMNet2/models/aimnet2_wb97m-d3_ens.jpt"
@@ -241,16 +259,42 @@ if __name__ == "__main__":
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
     
-    #idx = "7Z0X"
-    idx = "6M0J"
+    if os.path.exists("Data.csv"):
+        Data = pandas.read_csv("Data.csv", index_col=0)
+    else:
+        Data = pandas.DataFrame()
+    idx = "7Z0X"
+    #idx = "6M0J"
     inter = measure_interface(idx)
+    
     inter.Minimize()
     inter.load_universe()
-    inter.MeasureInterface()
     
-    print(inter.score)
+    inter.FindInterface()
+    inter.BuildInterface()
     
+    
+    #print(idx, " ".join(np.unique(inter.Spike_interface.resids).astype(np.str_)))
+    #print(idx, " ".join(inter.Spike.residues.resnames))
 
+    sys.exit()
+    
+    if inter.interface_seq not in Data.index:
+        inter.MeasureInterface()
+     
+    while inter.interface_seq in Data.index:
+        print(inter.interface_seq, "found in Data, mutating")
+        inter.Mutate()
+    print(inter.interface_seq, "<- Mutated interface sequence")
+    
+    inter.MakeMutation()
+    
+    sys.exit()
+
+    for key in inter.score:
+        Data.at[inter.interface_seq, key] = inter.score[key]
+        
+    Data.to_csv("Data.csv")
     
 
 
@@ -268,37 +312,3 @@ if __name__ == "__main__":
 # =============================================================================
 
 
-# =============================================================================
-# # Convert atom labels to their atomic numbers and pad with zero's
-# numbers = d4.utils.pack((
-#     d4.utils.to_number([x[0] for x in Spike_interface.types]),
-#     d4.utils.to_number([x[0] for x in Receptor_interface.types]),
-# ))
-# 
-# 
-# # coordinates in Bohr, MDAnalysis uses Angstrom natively so we need to scale
-# positions = d4.utils.pack((
-#     torch.from_numpy(Spike_interface.positions * Angstrom2Bohr),
-#     torch.from_numpy(Receptor_interface.positions * Angstrom2Bohr),
-# ))
-# 
-# # total charge of both system
-# charge = torch.tensor([0.0, 0.0])
-# 
-# # TPSS0-D4-ATM parameters
-# param = {
-#     "s6": positions.new_tensor(1.0),
-#     "s8": positions.new_tensor(1.85897750),
-#     "s9": positions.new_tensor(1.0),
-#     "a1": positions.new_tensor(0.44286966),
-#     "a2": positions.new_tensor(4.60230534),
-# }
-# 
-# # calculate dispersion energy in Hartree
-# energy = torch.sum(d4.dftd4(numbers, positions, charge, param), -1)
-# torch.set_printoptions(precision=10)
-# print(energy)
-# # tensor([-0.0088341432, -0.0027013607])
-# print(energy[0] - 2*energy[1])
-# # tensor(-0.0034314217)
-# =============================================================================
