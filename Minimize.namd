@@ -71,5 +71,5 @@ useConstantArea       no
 outputName          $outputname
 
 # Minimisation
-minimize            6000
+minimize            10000
 
