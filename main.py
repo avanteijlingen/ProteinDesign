@@ -5,12 +5,12 @@ Created on Fri Nov 10 20:05:38 2023
 @author: Alex
 """
 import MDAnalysis as mda
-import urllib, os, tqdm, subprocess, sys, shutil, copy, re, pandas, json
+import urllib, os, tqdm, subprocess, sys, shutil, copy, re, time, json
 from ase import Atoms
 import numpy as np
 from sklearn.metrics import euclidean_distances
 import matplotlib.pyplot as plt
-import torch, pandas
+import torch
 import tad_dftd4 as d4
 from pathlib import Path
 from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
@@ -129,7 +129,7 @@ class measure_interface:
         
     def Minimize(self):
         # Run a short minimization of the system
-        if not os.path.exists(f"{self.active_folder}/Minimize.log"):
+        if not os.path.exists(f"{self.active_folder}/Minimization.coor"):
             shutil.copy("Minimize.namd", f"{self.active_folder}/Minimize.namd")
             from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.code}_psfgen", Path("parameters").absolute().as_posix()])
             #subprocess.check_output([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"])
@@ -342,7 +342,7 @@ if __name__ == "__main__":
             
 
     # Randomly mutate residues and record the interface
-    for iteration in range(1):
+    for iteration in range(10000):
         print(f"Random iteration: {iteration+1}")
         for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
             while Complex_6M0J.interface_seq in Data[idx]:
@@ -368,6 +368,8 @@ if __name__ == "__main__":
                 with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
             else:
                 print("Already have data for:", idx, Complex.interface_seq)
+            
+            time.sleep(100) # give my laptop a chance to keep cool
             
 
 # =============================================================================
