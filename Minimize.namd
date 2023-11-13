@@ -27,7 +27,7 @@ parameters PARAM_DIR/toppar_water_ions_namd.str
 
 # Output file details
 restartfreq         2000
-dcdfreq             200
+dcdfreq             2000
 outputEnergies      10000
 outputPressure      10000
 
@@ -70,6 +70,13 @@ useConstantArea       no
 # Output
 outputName          $outputname
 
+GBIS                 on
+solventDielectric    78.5
+SASA                 off
+
+
 # Minimisation
+minimize            10000
+run                 10000
 minimize            10000
 
