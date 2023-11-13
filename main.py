@@ -335,7 +335,7 @@ if __name__ == "__main__":
             Complex.MeasureInterface()
             Data[idx]["XRD"] = {"Source": "XRD"}
             for key in Complex.score.keys():
-                Data[idx][Complex.interface_seq][key] = Complex.score[key]
+                Data[idx]["XRD"][key] = Complex.score[key]
             with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
             
         Complex.Minimize()
@@ -355,7 +355,7 @@ if __name__ == "__main__":
             
 
     # Randomly mutate residues and record the interface
-    for iteration in range(10000):
+    for iteration in range(10):
         print(f"Random iteration: {iteration+1}")
         for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
             while Complex_6M0J.interface_seq in Data[idx]:
@@ -382,8 +382,7 @@ if __name__ == "__main__":
             else:
                 print("Already have data for:", idx, Complex.interface_seq)
             
-            time.sleep(100) # give my laptop a chance to keep cool
-            
+
 
 # =============================================================================
 # 

@@ -2,9 +2,9 @@
     "7Z0X": {
         "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
             "Source": "Initial",
-            "hbonds": 4,
-            "BindingEnergy": -20.726439092148816,
-            "contact surface area": 26.70353755551324
+            "hbonds": 6,
+            "BindingEnergy": -32.35931305264907,
+            "contact surface area": 31.93952531149623
         },
         "VSCRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
             "Source": "Random",
@@ -25,21 +25,30 @@
             "contact surface area": 9.42477796076938
         },
         "XRD": {
-            "Source": "XRD"
+            "Source": "XRD",
+            "hbonds": 4,
+            "BindingEnergy": -20.726439092148816,
+            "contact surface area": 26.70353755551324
         },
         "VSIRGDEQGKIDVNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
             "Source": "Random",
             "hbonds": 3,
             "BindingEnergy": 8.219457843014435,
             "contact surface area": 12.566370614359172
+        },
+        "VSIRGDEDGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -1.3246577187280404,
+            "contact surface area": 7.853981633974482
         }
     },
     "6M0J": {
         "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
             "Source": "Initial",
-            "hbonds": 2,
-            "BindingEnergy": 5.787429379458096,
-            "contact surface area": 47.12388980384689
+            "hbonds": 9,
+            "BindingEnergy": -80.87714716120726,
+            "contact surface area": 37.69911184307752
         },
         "VSCRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
             "Source": "Random",
@@ -54,7 +63,10 @@
             "contact surface area": 31.93952531149623
         },
         "XRD": {
-            "Source": "XRD"
+            "Source": "XRD",
+            "hbonds": 2,
+            "BindingEnergy": 5.787429379458096,
+            "contact surface area": 47.12388980384689
         }
     },
     "interface_resid": [
