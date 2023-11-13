@@ -11,7 +11,6 @@ import numpy as np
 from sklearn.metrics import euclidean_distances
 import matplotlib.pyplot as plt
 import torch
-import tad_dftd4 as d4
 from pathlib import Path
 from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
 #import torchani
