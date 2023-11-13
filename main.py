@@ -367,6 +367,9 @@ if __name__ == "__main__":
             
             Complex.MakeMutation()
             Complex.Minimize()
+            if not os.path.exists(f"{Complex.active_folder}/Minimization.coor"):
+                print("Minimization failed, skipping")
+                continue
     
             Complex.load_universe()
             
