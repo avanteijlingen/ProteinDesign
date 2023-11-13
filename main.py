@@ -5,7 +5,7 @@ Created on Fri Nov 10 20:05:38 2023
 @author: Alex
 """
 import MDAnalysis as mda
-import urllib, os, tqdm, subprocess, sys, shutil, copy, re, pandas
+import urllib, os, tqdm, subprocess, sys, shutil, copy, re, pandas, json
 from ase import Atoms
 import numpy as np
 from sklearn.metrics import euclidean_distances
@@ -17,6 +17,10 @@ from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysi
 #import torchani
 
 from AIMNet2.calculators.aimnet2ase import AIMNet2Calculator
+
+import warnings
+warnings.filterwarnings("ignore")
+
 
 # Local libraries
 import contactarea
@@ -38,11 +42,11 @@ eV2kcalmol    = 23.0609
 # Since this program is non-generic we will define everything we need
 Chains = {"6M0J": {"A": "ACE2",
                    "E": "Spike"
-                  }, # THSC20.HVTR26 Fab bound to SARS-CoV-2 Receptor Binding Domain
+                  }, # Prot_A-Prot_C, THSC20.HVTR26 Fab bound to SARS-CoV-2 Receptor Binding Domain
           "7Z0X": {"H": "Antibody heavy chain",
                    "L": "Antibody light chain",
                    "R": "Spike",
-                   } #Crystal structure of SARS-CoV-2 spike receptor-binding domain bound with ACE2
+                   } # Prot_A-Prot_B, Crystal structure of SARS-CoV-2 spike receptor-binding domain bound with ACE2
          }
 
 def writepgn(fname, pdbs, segids, outfile):
@@ -83,26 +87,27 @@ def from_template(fname: str, original: list, new: list) -> None:
 
 class measure_interface:
     def download_pdb(self):
-        if not os.path.exists(f"MD/{self.code}/{self.code}.pdb"):
-            urllib.request.urlretrieve(f"http://files.rcsb.org/download/{self.code}.pdb", f"MD/{self.code}/{self.code}.pdb") 
+        if not os.path.exists(f"{self.active_folder}/{self.code}.pdb"):
+            urllib.request.urlretrieve(f"http://files.rcsb.org/download/{self.code}.pdb", f"{self.active_folder}/{self.code}.pdb") 
     
     def psf(self):
-        if os.path.exists(f"MD/{self.code}/{self.code}_psfgen.psf") and 1==0:
+        if os.path.exists(f"{self.active_folder}/{self.code}_psfgen.psf"):
+            self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf") # temp, once off fix
             return None
-        U = mda.Universe(f"MD/{self.code}/{self.code}.pdb")
+        U = mda.Universe(f"{self.active_folder}/{self.code}.pdb")
         protein = U.select_atoms("protein")
         pdbs = []
         for chainID in Chains[self.code]:
             chain = protein.select_atoms(f"chainID {chainID}")
-            pdb_file = f"MD/{idx}/{idx}_{chainID}.pdb"
+            pdb_file = f"{self.active_folder}/{self.code}_{chainID}.pdb"
             # We must rename His to Hse for our forcefield
             chain.residues.resnames = [x.replace("HIS", "HSE") for x in chain.residues.resnames]
             chain.write(pdb_file)
             pdbs.append(pdb_file)
-        writepgn(f"MD/{idx}/{idx}.pgn", pdbs, Chains[idx], f"MD/{self.code}/{self.code}_psfgen")
+        writepgn(f"{self.active_folder}/{self.code}.pgn", pdbs, Chains[self.code], f"{self.active_folder}/{self.code}_psfgen")
         # psfgen adds hydrogens to the structure and creates a topology
-        x = subprocess.check_output([psfgen, f"MD/{self.code}/{self.code}.pgn"])
-        self.fix_psf(f"MD/{self.code}/{self.code}_psfgen.psf")
+        subprocess.check_output([psfgen, f"{self.active_folder}/{self.code}.pgn"])
+        self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf")
     
     def fix_psf(self, psf_file):
         # psfgen is adding numbers to some resids in the psf for 7Z0X chainID L and H, so we will just convert these (82A -> 82)
@@ -124,13 +129,13 @@ class measure_interface:
         
     def Minimize(self):
         # Run a short minimization of the system
-        if not os.path.exists(f"MD/{idx}/Minimize.log"):
-            shutil.copy("Minimize.namd", f"MD/{idx}/Minimize.namd")
-            from_template(f"MD/{idx}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{idx}_psfgen", Path("parameters").absolute().as_posix()])
-            #subprocess.check_output([namd, "+p4", f"MD/{idx}/Minimize.namd", ">", f"MD/{idx}/Minimize.log"])
-            os.system(" ".join([namd, "+p4", f"MD/{idx}/Minimize.namd", ">", f"MD/{idx}/Minimize.log"]))
+        if not os.path.exists(f"{self.active_folder}/Minimize.log"):
+            shutil.copy("Minimize.namd", f"{self.active_folder}/Minimize.namd")
+            from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.code}_psfgen", Path("parameters").absolute().as_posix()])
+            #subprocess.check_output([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"])
+            os.system(" ".join([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"]))
         # =============================================================================
-        #     ps = subprocess.Popen([namd, "+p4", f"MD/{idx}/Minimize.namd", ">", f"MD/{idx}/Minimize.log"], stdout=subprocess.PIPE)
+        #     ps = subprocess.Popen([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"], stdout=subprocess.PIPE)
         #     ps.wait()
         # =============================================================================
 
@@ -177,33 +182,36 @@ class measure_interface:
         self.MeasureBindingEnergy()
         self.score["contact surface area"] = self.surface_contact.calculate(self.Spike_ase, self.Receptor_ase)
     
-    def FindInterface(self):
+    def FindInitialInterface(self):
         # First determine which residues are part of the interface
-        interface_cutoff = 10.0 # Angstrom, We need to trim these proteins down to just those at the interface to fit the dispersion calculation in memory
         d = euclidean_distances(self.Spike.positions, self.Receptor.positions)
-        Spike_interface = self.Spike[d.min(axis=1) < interface_cutoff]
-        Receptor_interface = self.Receptor[d.min(axis=0) < interface_cutoff]
+        Spike_interface = self.Spike[d.min(axis=1) < self.interface_cutoff]
         # Rebuild the broken residues (some atoms dont pass the cutoff) 
-        #self.spike_resids = " ".join(np.unique(Spike_interface.resids).astype(np.str_))
-        self.spike_resids = self.spike_interface_resids
+        return np.unique(Spike_interface.resids)
+        
+    def FindInterface(self):
+        # Use this if we have already determined which resids are part of the interface
+        d = euclidean_distances(self.Spike.select_atoms(f"resid {self.spike_interface_resids}").positions, self.Receptor.positions)
+        Receptor_interface = self.Receptor[d.min(axis=0) < self.interface_cutoff]
         self.Receptor_resids = " ".join(np.unique(Receptor_interface.resids).astype(np.str_))
 
     def BuildInterface(self):
-        self.Spike_interface = self.Spike.select_atoms(f"resid {self.spike_resids}")
+        self.Spike_interface = self.Spike.select_atoms(f"resid {self.spike_interface_resids}")
         self.Receptor_interface = self.Receptor.select_atoms(f"resid {self.Receptor_resids}")
-        #mda.Merge(self.Spike_interface, self.Receptor_interface).select_atoms("all").write(f"MD/{self.code}/Interface.pdb")
+        mda.Merge(self.Spike_interface, self.Receptor_interface).select_atoms("all").write(f"{self.active_folder}/Interface.pdb")
         elements = [x[0] for x in self.Spike_interface.names]
         self.Spike_ase = Atoms(elements, self.Spike_interface.positions)
         elements = [x[0] for x in self.Receptor_interface.names]
         self.Receptor_ase = Atoms(elements, self.Receptor_interface.positions)
         self.interface_seq = pu.translate3to1("-".join(self.Spike_interface.residues.resnames))
-        
+        if self.original_seq is None:
+            self.original_seq = copy.copy(self.interface_seq)
+            
     def load_universe(self):
-        self.U = mda.Universe(f"MD/{self.code}/{self.code}_psfgen.psf", f"MD/{self.code}/Minimization.coor")
+        self.U = mda.Universe(f"{self.active_folder}/{self.code}_psfgen.psf", f"{self.active_folder}/Minimization.coor")
         self.U.trajectory[-1]
         self.Spike = self.U.select_atoms(f"segid {self.spike_chainID}")
         self.Receptor = self.U.select_atoms(f"segid {self.receptor_chainID}")
-        self.resnames = self.Spike.residues.resnames
     
     def Mutate(self):
         sel = np.random.choice(np.arange(len(self.interface_seq)))
@@ -211,21 +219,43 @@ class measure_interface:
         new_res = self.interface_seq[sel]
         while new_res == self.interface_seq[sel]:
             self.interface_seq[sel] = np.random.choice(pu.peptideutils_letters1)
+        print("Mutated:", sel, "resid:", self.spike_interface_resids.split()[sel])
         self.interface_seq = "".join(self.interface_seq)
         
     def MakeMutation(self):
-        self.folder = f"MD/{self.code}_{self.interface_seq}"
-        os.makedirs(self.folder, exist_ok=True)
-        print(len(self.Spike_interface.residues.resnames))
-        print(len(self.interface_seq))
-        self.Spike_interface.residues.resnames = pu.translate1to3(self.interface_seq).split("-")
+        self.active_folder = f"MD/{self.code}_{self.interface_seq}"
+        os.makedirs(self.active_folder, exist_ok=True)
+        self.Spike_interface.residues.resnames = pu.translate1to3(self.interface_seq).split("-") # This propogates all the way up the universe
+        pdbs = [f"{self.active_folder}/{self.code}_{self.spike_chainID}.pdb"]
+        segids = [self.spike_chainID]
+        self.Spike.write(f"{self.active_folder}/{self.code}_{self.spike_chainID}.pdb")
+        for chainID in self.receptor_chainID.split():
+            self.Receptor.select_atoms(f"segid {chainID}").write(f"{self.active_folder}/{self.code}_{chainID}.pdb")
+            pdbs.append(f"{self.active_folder}/{self.code}_{chainID}.pdb")
+            segids.append(chainID)
+        
+
+        writepgn(f"{self.active_folder}/{self.code}.pgn", 
+                 pdbs, 
+                 segids, 
+                 f"{self.active_folder}/{self.code}_psfgen")
+        
+        x = subprocess.check_output([psfgen, f"{self.active_folder}/{self.code}.pgn"])
+        assert os.path.exists(f"{self.active_folder}/{self.code}_psfgen.psf"), f"Couldnt make: {self.active_folder}/{self.code}_psfgen.psf"
+        self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf")
+        
+    def reset_seq(self):
+        self.interface_seq = copy.copy(self.original_seq)
         
     def __init__(self, code):
         self.code = code
+        self.active_folder = f"MD/{self.code}"
         #Initialize
-        os.makedirs(f"MD/{self.code}", exist_ok=True)
+        os.makedirs(f"{self.active_folder}", exist_ok=True)
         self.download_pdb()
         self.psf()
+        
+        self.original_seq = None
         
         self.spike_chainID = ""
         self.receptor_chainID = ""
@@ -234,11 +264,14 @@ class measure_interface:
                 self.spike_chainID = self.spike_chainID + chainID + " "
             else:
                 self.receptor_chainID = self.receptor_chainID + chainID + " "
+        self.spike_chainID = self.spike_chainID.strip() # Removing trailing ' '
+        self.receptor_chainID = self.receptor_chainID.strip()
 # =============================================================================
 #         print("receptor_chainID:", self.receptor_chainID)
 #         print("spike_chainID:", self.spike_chainID)
 # =============================================================================
         self.spike_interface_resids = '350 402 403 404 405 406 408 409 416 417 418 419 420 421 422 437 438 439 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 471 472 473 474 475 476 477 478 479 480 481 482 483 484 485 486 487 488 489 490 491 492 493 494 495 496 497 498 499 500 501 502 503 504 505 506 507 508'
+        self.interface_cutoff = 10.0 # Angstrom, We need to trim these proteins down to just those at the interface to fit the dispersion calculation in memory
         
         # Load AIMNet2 model for energy calculations
         self.AIMNet2_model_file = "AIMNet2/models/aimnet2_wb97m-d3_ens.jpt"
@@ -252,6 +285,7 @@ class measure_interface:
 
 
 if __name__ == "__main__":
+    np.random.seed(435634)
     #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device('cpu')
     
@@ -259,47 +293,82 @@ if __name__ == "__main__":
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
     
-    if os.path.exists("Data.csv"):
-        Data = pandas.read_csv("Data.csv", index_col=0)
+    if os.path.exists("Data.json"):
+        with open("Data.json") as jin:
+            Data = json.load(jin)
     else:
-        Data = pandas.DataFrame()
-    idx = "7Z0X"
-    #idx = "6M0J"
-    inter = measure_interface(idx)
-    
-    inter.Minimize()
-    inter.load_universe()
-    
-    inter.FindInterface()
-    inter.BuildInterface()
-    
-    
-    #print(idx, " ".join(np.unique(inter.Spike_interface.resids).astype(np.str_)))
-    #print(idx, " ".join(inter.Spike.residues.resnames))
+        Data = {"7Z0X": {}, "6M0J": {}}
 
-    sys.exit()
     
-    if inter.interface_seq not in Data.index:
-        inter.MeasureInterface()
-     
-    while inter.interface_seq in Data.index:
-        print(inter.interface_seq, "found in Data, mutating")
-        inter.Mutate()
-    print(inter.interface_seq, "<- Mutated interface sequence")
+    Complex_7Z0X = measure_interface("7Z0X")
+    Complex_6M0J = measure_interface("6M0J")
     
-    inter.MakeMutation()
-    
-    sys.exit()
+    # First determine which residues are part of the interface
+    # We want to get them from both complexes and stack them together since they mostly but not entirely overlap
+    if "interface_resid" not in Data:
+        spike_resids = np.ndarray((0,), dtype=np.int64)
+        for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
+            Complex.Minimize()
+            Complex.load_universe()
+            
+            spike_resids = np.hstack((spike_resids, Complex.FindInitialInterface()))
+            print(spike_resids)
+        spike_resids = np.unique(spike_resids)
+        print(spike_resids)
+        Complex_7Z0X.spike_interface_resids = " ".join(spike_resids.astype(np.str_))
+        Complex_6M0J.spike_interface_resids = " ".join(spike_resids.astype(np.str_))
+        Data["interface_resid"] = [int(x) for x in spike_resids]
+        with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))#, separators=(',', ':')))
+    else:
+        Complex_7Z0X.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
+        Complex_6M0J.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
 
-    for key in inter.score:
-        Data.at[inter.interface_seq, key] = inter.score[key]
+    # Run the initial minimization and make measurements
+    for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
+        Complex.Minimize()
+        Complex.load_universe()
         
-    Data.to_csv("Data.csv")
+        Complex.FindInterface() # If we have already set self.spike_interface_resids then use this
+        Complex.BuildInterface()
+        #Make measurements and store them
+        if Complex.interface_seq not in Data[idx]:
+            Complex.MeasureInterface()
+            Data[idx][Complex.interface_seq] = {"Source": "Initial"}
+            for key in Complex.score.keys():
+                Data[idx][Complex.interface_seq][key] = Complex.score[key]
+            with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
+        else:
+            print("Already have data for:", idx, Complex.interface_seq)
+            
+
+    # Randomly mutate residues and record the interface
+    for iteration in range(1):
+        print(f"Random iteration: {iteration+1}")
+        for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
+            while Complex_6M0J.interface_seq in Data[idx]:
+                print(Complex_6M0J.interface_seq, "found in Data, mutating")
+                Complex_6M0J.reset_seq()
+                Complex_6M0J.Mutate()
+            print(Complex_6M0J.interface_seq, "<- Mutated interface sequence")
+            Complex_7Z0X.interface_seq = Complex_6M0J.interface_seq
+            
+            Complex.MakeMutation()
+            Complex.Minimize()
     
-
-
-
-
+            Complex.load_universe()
+            
+            Complex.FindInterface() # If we have already set self.spike_interface_resids then use this
+            Complex.BuildInterface()
+            #Make measurements and store them
+            if Complex.interface_seq not in Data[idx]:
+                Complex.MeasureInterface()
+                Data[idx][Complex.interface_seq] = {"Source": "Random"}
+                for key in Complex.score.keys():
+                    Data[idx][Complex.interface_seq][key] = Complex.score[key]
+                with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
+            else:
+                print("Already have data for:", idx, Complex.interface_seq)
+            
 
 # =============================================================================
 # 
