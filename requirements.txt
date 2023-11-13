@@ -3,7 +3,7 @@ numpy
 tqdm
 scikit-learn
 matplotlib
-torch --index-url https://download.pytorch.org/whl/cu121
+torch>=2.0.0
 pandas
 torchani
 ase

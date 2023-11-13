@@ -30,10 +30,13 @@ import peptideutils as pu
 # page 20 Mutation of tyrosine into alanine
 # =============================================================================
 
-
-vmd_dir = "C:/Program Files (x86)/University of Illinois/VMD/plugins/noarch/tcl/readcharmmtop1.2/"
-psfgen = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/psfgen.exe"
-namd = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/namd2.exe"
+# Should be in a dotenv
+#vmd_dir = "C:/Program Files (x86)/University of Illinois/VMD/plugins/noarch/tcl/readcharmmtop1.2/"
+#psfgen = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/psfgen.exe"
+#namd = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/namd2.exe"
+vmd_dir = "/opt/software/vmd/1.9.4/lib/plugins/noarch/tcl/readcharmmtop1.2/"
+psfgen = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/psfgen"
+namd = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/namd2"
 
 Angstrom2Bohr = 1.88973
 eV2kcalmol    = 23.0609
@@ -124,8 +127,7 @@ class measure_interface:
                         line = line.replace(resid, re.sub("[a-zA-Z]"," ",resid))
                 output_psf.write(line)
                 output_psf.write("\n")
-            
-        
+
     def Minimize(self):
         # Run a short minimization of the system
         if not os.path.exists(f"{self.active_folder}/Minimization.coor"):
@@ -206,8 +208,8 @@ class measure_interface:
         if self.original_seq is None:
             self.original_seq = copy.copy(self.interface_seq)
             
-    def load_universe(self):
-        self.U = mda.Universe(f"{self.active_folder}/{self.code}_psfgen.psf", f"{self.active_folder}/Minimization.coor")
+    def load_universe(self, coord_file = "Minimization.coor"):
+        self.U = mda.Universe(f"{self.active_folder}/{self.code}_psfgen.psf", f"{self.active_folder}/{coord_file}")
         self.U.trajectory[-1]
         self.Spike = self.U.select_atoms(f"segid {self.spike_chainID}")
         self.Receptor = self.U.select_atoms(f"segid {self.receptor_chainID}")
@@ -324,6 +326,18 @@ if __name__ == "__main__":
 
     # Run the initial minimization and make measurements
     for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
+        # Get the XRD structure data
+        if "XRD" not in Data[idx]:
+            print("Getting pure XRD measurements")
+            Complex.load_universe(coord_file = f"{idx}_psfgen.pdb")
+            Complex.FindInterface() # If we have already set self.spike_interface_resids then use this
+            Complex.BuildInterface()
+            Complex.MeasureInterface()
+            Data[idx]["XRD"] = {"Source": "XRD"}
+            for key in Complex.score.keys():
+                Data[idx][Complex.interface_seq][key] = Complex.score[key]
+            with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
+            
         Complex.Minimize()
         Complex.load_universe()
         
