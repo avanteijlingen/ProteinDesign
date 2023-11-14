@@ -26,6 +26,12 @@ from sklearn.linear_model import Ridge
 import warnings
 warnings.filterwarnings("ignore")
 
+from dotenv import load_dotenv
+
+# Environmental variables check
+load_dotenv()
+for var in ["NAMD", "VMDTOP", "PSFGEN"]:
+    assert var in list(os.environ.keys()), f"Couldnt find environmental variable: {var}"
 
 # Local libraries
 import contactarea
@@ -40,10 +46,10 @@ import peptideutils as pu
 #vmd_dir = "C:/Program Files (x86)/University of Illinois/VMD/plugins/noarch/tcl/readcharmmtop1.2/"
 #psfgen = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/psfgen.exe"
 #namd = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/namd2.exe"
-vmd_dir = "/opt/software/vmd/1.9.4/lib/plugins/noarch/tcl/readcharmmtop1.2/"
-psfgen = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/psfgen"
-namd = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/namd2"
-#namd = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source/Linux-x86_64-g++/namd2"
+vmd_dir = os.environ["VMDTOP"]
+psfgen = os.environ["PSFGEN"]
+namd = os.environ["NAMD"]
+
 
 Angstrom2Bohr = 1.88973
 eV2kcalmol    = 23.0609

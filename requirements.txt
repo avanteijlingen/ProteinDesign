@@ -8,3 +8,4 @@ pandas
 torchani
 ase
 pandas
+python-dotenv

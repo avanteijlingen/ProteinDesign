@@ -769,6 +769,12 @@
             "hbonds": 5,
             "BindingEnergy": -33.10362300754276,
             "contact surface area": 30.36872898470133
+        },
+        "VSIREDEMGKIDYSNLGKVGGNYYLYRLFNKTEIYQAGSTPCDGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -29.938719757665485,
+            "contact surface area": 20.94395102393195
         }
     },
     "interface_resid": [
