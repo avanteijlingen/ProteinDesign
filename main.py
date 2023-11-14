@@ -8,14 +8,20 @@ import MDAnalysis as mda
 import urllib, os, tqdm, subprocess, sys, shutil, copy, re, time, json
 from ase import Atoms
 import numpy as np
-from sklearn.metrics import euclidean_distances
+from sklearn.metrics import euclidean_distances, r2_score
 import matplotlib.pyplot as plt
 import torch
 from pathlib import Path
-from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
-#import torchani
 
 from AIMNet2.calculators.aimnet2ase import AIMNet2Calculator
+from MDAnalysis.analysis.hydrogenbonds.hbond_analysis import HydrogenBondAnalysis as HBA
+
+from rdkit import Chem
+from PyBioMed.PyMolecule import topology
+from PyBioMed import Pyprotein
+from PyBioMed.PyProtein import AAComposition, CTD
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -37,6 +43,7 @@ import peptideutils as pu
 vmd_dir = "/opt/software/vmd/1.9.4/lib/plugins/noarch/tcl/readcharmmtop1.2/"
 psfgen = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/psfgen"
 namd = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source_CUDA/Linux-x86_64-g++/namd2"
+#namd = "/users/rkb19187/Desktop/Constant_pH/NAMD_2.14_Source/Linux-x86_64-g++/namd2"
 
 Angstrom2Bohr = 1.88973
 eV2kcalmol    = 23.0609
@@ -134,7 +141,7 @@ class measure_interface:
             shutil.copy("Minimize.namd", f"{self.active_folder}/Minimize.namd")
             from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.code}_psfgen", Path("parameters").absolute().as_posix()])
             #subprocess.check_output([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"])
-            os.system(" ".join([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"]))
+            os.system(" ".join([namd, "+p10", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"]))
         # =============================================================================
         #     ps = subprocess.Popen([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"], stdout=subprocess.PIPE)
         #     ps.wait()
@@ -284,11 +291,22 @@ class measure_interface:
         
         self.score = {}
 
+def makepeptide(peptide):
+    """
+    
+    INFO       Chain termini will be charged
+    
+    """
+    mol = Chem.MolFromSequence(peptide)
+    mol.GetAtomWithIdx(0).SetFormalCharge(1)
+    mol.GetAtomWithIdx(len(list(mol.GetAtoms()))-1).SetFormalCharge(-1)
+    return mol
+
 
 if __name__ == "__main__":
     np.random.seed(435634)
-    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cpu')
     
     # For AIMNet backend
     torch.backends.cuda.matmul.allow_tf32 = False
@@ -355,12 +373,13 @@ if __name__ == "__main__":
             
 
     # Randomly mutate residues and record the interface
-    for iteration in range(10):
-        print(f"Random iteration: {iteration+1}")
+    while len(Data["7Z0X"]) < 5000:
+        print(f"Random iteration: ", len(Data["7Z0X"])-2)
         for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
             while Complex_6M0J.interface_seq in Data[idx]:
                 print(Complex_6M0J.interface_seq, "found in Data, mutating")
-                Complex_6M0J.reset_seq()
+                if len(Data["7Z0X"]) % 10 == 0:
+                    Complex_6M0J.reset_seq()
                 Complex_6M0J.Mutate()
             print(Complex_6M0J.interface_seq, "<- Mutated interface sequence")
             Complex_7Z0X.interface_seq = Complex_6M0J.interface_seq
@@ -384,17 +403,62 @@ if __name__ == "__main__":
                 with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
             else:
                 print("Already have data for:", idx, Complex.interface_seq)
-            
+    
+    for key in ["7Z0X", "6M0J"]:
+        print(key, len(Data[key]), "data points")
 
+    # Active machine learning
+    print("PyBioMed generating parameters")
+    if os.path.exists("PyBioMed.csv"):
+        PyBioMed_data = pandas.read_csv("PyBioMed.csv", index_col=0)
+    else:
+        PyBioMed_data = pandas.DataFrame()
+    X = np.ndarray((0, 9880))
+    Y = np.ndarray((0, ))
+    for seq in tqdm.tqdm(Data["7Z0X"]):
+        if seq == "XRD":
+            continue
+        Y = np.hstack((Y, Data["7Z0X"][seq]["BindingEnergy"]))
+        if seq in PyBioMed_data.index:
+            X = np.vstack((X, PyBioMed_data.loc[seq]))
+            continue
+        peptide_data = {}
+        peptide_class = Pyprotein.PyProtein(seq)
+        
+        for function in ["GetAAComp", "GetALL", "GetAPAAC", "GetCTD", "GetDPComp", "GetGearyAuto", "GetMoranAuto", "GetMoreauBrotoAuto", "GetPAAC", "GetQSO", "GetSOCN", "GetTPComp", "GetTriad"]: #dir(peptide_class):
+            peptide_data.update(getattr(peptide_class, function)())
+        if PyBioMed_data.shape[0] == 0:
+            PyBioMed_data = pandas.DataFrame(columns=list(peptide_data.values()))
+        PyBioMed_data.loc[seq] = np.array(list(peptide_data.values()))
+        X = np.vstack((X, np.array(list(peptide_data.values()), dtype=np.float64)))
+    # Cache them so we arent regenerating on each cycle
+    PyBioMed_data.to_csv("PyBioMed.csv")
 
-# =============================================================================
-# 
-# inter.Mutate()
-# 
-# etc etc 
-# 
-# predict, measure, predict active laerning optimizzation
-# 
-# =============================================================================
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=95)
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.feature_selection import RFE
+    from sklearn.svm import SVR
+    from sklearn.linear_model import RANSACRegressor
+    #model = RandomForestRegressor()
+    support = RFE(Ridge(), n_features_to_select=50, step=20)
+    support = support.fit(X_train, y_train)
+    
+    X_train = X_train[:,support.support_]
+    X_test = X_test[:,support.support_]
+    print("Remaining parameters:", support.support_.sum())
+    
+    #model = SVR(epsilon=0.5, kernel="rbf", C=10.0)
+    model = RANSACRegressor(Ridge(), min_samples=10)
+    model.fit(X_train, y_train)
+    
+    y_train_pred = model.predict(X_train)
+    y_test_pred = model.predict(X_test)
+    
+    r2 = r2_score(y_test, y_test_pred)
+    print("Test r2:", r2)
+    
+    plt.scatter(y_train, y_train_pred)
+    plt.scatter(y_test, y_test_pred)
+
 
 

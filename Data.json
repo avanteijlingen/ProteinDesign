@@ -107,6 +107,294 @@
             "hbonds": 3,
             "BindingEnergy": 1.488621821252536,
             "contact surface area": 6.8067840827778845
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNFVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -30.49761671570856,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIYGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -17.9349713456742,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -18.7773436250726,
+            "contact surface area": 16.755160819145562
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -24.644911912077898,
+            "contact surface area": 17.80235837034216
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYKYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 10.516548108728113,
+            "contact surface area": 9.948376736367678
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 13.559832480958523,
+            "contact surface area": 13.613568165555769
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQTYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -1.9754257816924714,
+            "contact surface area": 15.184364492350666
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTYGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -10.842412844169955,
+            "contact surface area": 13.08996938995747
+        },
+        "VSIRGDEQGKIYYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 2.7733864134997828,
+            "contact surface area": 9.948376736367678
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFWLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": 6.2063479281577285,
+            "contact surface area": 13.08996938995747
+        },
+        "VSIRGDEQGKIDYNNNSKVGINYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 9.077401105626649,
+            "contact surface area": 15.707963267948964
+        },
+        "VSERGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": 13.235765816775594,
+            "contact surface area": 16.231562043547264
+        },
+        "VSIRGDEQGKIDYNTNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": 17.266394317414054,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTERYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": 12.105949552566932,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIQYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 6.944868130216236,
+            "contact surface area": 9.42477796076938
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFYPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 14.427652214312344,
+            "contact surface area": 8.90117918517108
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQYGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -0.22660346588529648,
+            "contact surface area": 11.519173063162574
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEYYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": 23.1455626583403,
+            "contact surface area": 10.471975511965976
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQPYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 5.567371484435583,
+            "contact surface area": 9.948376736367678
+        },
+        "VSIRGDEQEKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": 5.504416627305048,
+            "contact surface area": 8.90117918517108
+        },
+        "VSIRGDEQGKIDYNNPSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": -6.384093356305454,
+            "contact surface area": 8.90117918517108
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLASYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": -2.7985480336113366,
+            "contact surface area": 7.853981633974482
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFDLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 5.301892731165584,
+            "contact surface area": 9.948376736367678
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 4.121151453469624,
+            "contact surface area": 4.71238898038469
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 8.461677759212069,
+            "contact surface area": 5.235987755982988
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 9.146312088232278,
+            "contact surface area": 10.471975511965976
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 1,
+            "BindingEnergy": -3.1467775290300373,
+            "contact surface area": 2.617993877991494
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 10.258415234237305,
+            "contact surface area": 8.377580409572781
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 12.440870815361688,
+            "contact surface area": 4.71238898038469
+        },
+        "VSIRGDEQGKIYYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": 4.5664657790983565,
+            "contact surface area": 14.137166941154067
+        },
+        "VSIRGDEQGKIYYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFWLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": 0.8917599916520529,
+            "contact surface area": 10.471975511965976
+        },
+        "VSIRGDEQGKIYYNNNSKCGINYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFWLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -0.3580647730119992,
+            "contact surface area": 11.519173063162574
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -4.688826879745256,
+            "contact surface area": 9.42477796076938
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": -7.1386412851067025,
+            "contact surface area": 6.8067840827778845
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": -1.0227959655623418,
+            "contact surface area": 6.283185307179586
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFPLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -45.66071392288301,
+            "contact surface area": 9.948376736367678
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -47.04134642929428,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 2,
+            "BindingEnergy": -38.742697147990135,
+            "contact surface area": 7.853981633974482
+        },
+        "VSIRGDGQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -48.77460824273038,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIRGDGQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": -26.31882799919974,
+            "contact surface area": 15.184364492350666
+        },
+        "VSIRGDGQGKIDYNNGSTVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 3,
+            "BindingEnergy": 8.125498763072887,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDGQGKIDYNNGSTVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFVPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -16.773733767289343,
+            "contact surface area": 25.132741228718345
+        },
+        "VSIRGDEQGKIDYNNLSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 6.5904567309222415,
+            "contact surface area": 20.420352248333653
+        },
+        "VSIRGDEQGKIDYNNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -15.864348461338016,
+            "contact surface area": 24.609142453120043
+        },
+        "VSIREDEQGKIDYNNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": 25.66151533184368,
+            "contact surface area": 16.231562043547264
+        },
+        "VSIREDEQGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -16.933436204520635,
+            "contact surface area": 27.227136331111538
+        },
+        "VSIREDEMGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": 9.425759522928042,
+            "contact surface area": 16.231562043547264
+        },
+        "VSIREDEMGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCDGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 7,
+            "BindingEnergy": -55.99070190867041,
+            "contact surface area": 29.321531433504735
         }
     },
     "6M0J": {
@@ -193,6 +481,294 @@
             "hbonds": 8,
             "BindingEnergy": -126.2091355832933,
             "contact surface area": 32.46312408709453
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNFVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 8,
+            "BindingEnergy": -94.29381905137701,
+            "contact surface area": 40.84070449666731
+        },
+        "VSIYGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 9,
+            "BindingEnergy": -104.37318726243961,
+            "contact surface area": 40.31710572106901
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFDLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -116.96759473511773,
+            "contact surface area": 56.025068989017974
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 10,
+            "BindingEnergy": -110.8195439818726,
+            "contact surface area": 51.83627878423158
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 13,
+            "BindingEnergy": -121.74838383116776,
+            "contact surface area": 60.73745796940266
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYKYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -135.25732247270298,
+            "contact surface area": 62.831853071795855
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 13,
+            "BindingEnergy": -125.54493324375856,
+            "contact surface area": 62.831853071795855
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQTYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -132.78804758539889,
+            "contact surface area": 62.831853071795855
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTYGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 9,
+            "BindingEnergy": -91.95607965859926,
+            "contact surface area": 43.982297150257104
+        },
+        "VSIRGDEQGKIYYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -120.29869505468996,
+            "contact surface area": 57.59586531581287
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFWLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -133.83764229266882,
+            "contact surface area": 57.59586531581287
+        },
+        "VSIRGDEQGKIDYNNNSKVGINYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -139.21171746297358,
+            "contact surface area": 63.35545184739416
+        },
+        "VSERGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 10,
+            "BindingEnergy": -118.42825562773042,
+            "contact surface area": 46.0766922526503
+        },
+        "VSIRGDEQGKIDYNTNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -129.60524484946373,
+            "contact surface area": 56.54866776461627
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTERYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -127.11589978188933,
+            "contact surface area": 61.261056745000964
+        },
+        "VSIRGDEQGKIQYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -91.82657845698976,
+            "contact surface area": 58.11946409141117
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFYPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -90.92417527155231,
+            "contact surface area": 54.97787143782138
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQYGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -96.49769919323155,
+            "contact surface area": 60.73745796940266
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEYYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -90.9288612606365,
+            "contact surface area": 53.93067388662478
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQPYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 14,
+            "BindingEnergy": -131.21928686733773,
+            "contact surface area": 64.92624817418906
+        },
+        "VSIRGDEQEKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -93.68331276457658,
+            "contact surface area": 63.35545184739416
+        },
+        "VSIRGDEQGKIDYNNPSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 12,
+            "BindingEnergy": -82.96722147487294,
+            "contact surface area": 54.454272662223076
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLASYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 10,
+            "BindingEnergy": -77.20622621440235,
+            "contact surface area": 46.0766922526503
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 9,
+            "BindingEnergy": -93.28027035698844,
+            "contact surface area": 41.8879020478639
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -133.44189767655064,
+            "contact surface area": 47.647488579445195
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 8,
+            "BindingEnergy": -95.87900810921292,
+            "contact surface area": 43.982297150257104
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQSYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 7,
+            "BindingEnergy": -39.83762766404597,
+            "contact surface area": 28.797932657906436
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTNQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -51.81723374472852,
+            "contact surface area": 21.991148575128552
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": 14.994995813455736,
+            "contact surface area": 25.132741228718345
+        },
+        "VSIRGDEQGKIYYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFDLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -28.064802591643087,
+            "contact surface area": 18.325957145940457
+        },
+        "VSIRGDEQGKIYYNNNSKCGGNYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFWLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 7,
+            "BindingEnergy": -27.600971741817332,
+            "contact surface area": 30.36872898470133
+        },
+        "VSIRGDEQGKIYYNNNSKCGINYYKYRLFRKTEIYQAGSTPCNGVEGHNCYFWLQTYGFQPTYQVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -59.13351690596806,
+            "contact surface area": 26.70353755551324
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 7,
+            "BindingEnergy": -48.9532625242437,
+            "contact surface area": 31.93952531149623
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 9,
+            "BindingEnergy": -73.28143770414381,
+            "contact surface area": 41.36430327226561
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -27.944797189264676,
+            "contact surface area": 41.8879020478639
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFPLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -97.99106253807466,
+            "contact surface area": 26.17993877991494
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -121.18641686676466,
+            "contact surface area": 35.08111796508602
+        },
+        "VSIRGDEQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -93.67472109374101,
+            "contact surface area": 35.08111796508602
+        },
+        "VSIRGDGQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVKGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -74.52971779017774,
+            "contact surface area": 29.321531433504735
+        },
+        "VSIRGDGQGKIDYNNGSKVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -62.49804932590716,
+            "contact surface area": 33.510321638291124
+        },
+        "VSIRGDGQGKIDYNNGSTVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFQPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -64.05242365370971,
+            "contact surface area": 17.27875959474386
+        },
+        "VSIRGDGQGKIDYNNGSTVGGNYYLYRLFRKTHIYQAGSTPCNGVQGFNCYFYLQSYGFVPTNGVGYNNY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -29.212337686973765,
+            "contact surface area": 27.750735106709836
+        },
+        "VSIRGDEQGKIDYNNLSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 4,
+            "BindingEnergy": -56.55945942826604,
+            "contact surface area": 19.896753472735355
+        },
+        "VSIRGDEQGKIDYNNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -61.71639448533224,
+            "contact surface area": 24.085543677521745
+        },
+        "VSIREDEQGKIDYNNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -51.61644846039484,
+            "contact surface area": 25.132741228718345
+        },
+        "VSIREDEQGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 6,
+            "BindingEnergy": -63.28749416023379,
+            "contact surface area": 28.797932657906436
+        },
+        "VSIREDEMGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -26.097551357205305,
+            "contact surface area": 20.420352248333653
+        },
+        "VSIREDEMGKIDYSNLSKVGGNYYLYRLFNKTEIYQAGSTPCDGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 5,
+            "BindingEnergy": -33.10362300754276,
+            "contact surface area": 30.36872898470133
         }
     },
     "interface_resid": [
