@@ -174,3 +174,5 @@ MD/
 *.dat
 *.pptx
 *.sh
+*.bak
+*(copy)*

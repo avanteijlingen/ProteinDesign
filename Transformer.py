@@ -24,14 +24,14 @@ device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
 print("Device:", device)
 
-d_model = 40 #512 # Embedding size
+d_model = 512 # Embedding size
 src_vocab_size = 21
 lr = 0.002
-n_layers = 1 # number of Encoder and Decoder Layer
+n_layers = 6 # number of Encoder and Decoder Layer
 d_k = 64 # dimension of K(=Q), V
 d_v = 64 # dimension of K(=Q), V
 n_heads = 8 # number of heads in Multi-Head Attention
-d_ff = 256 #2048 # FeedForward dimension
+d_ff = 2048 # FeedForward dimension
 src_len = 70
 batch_size = 100 #1024
 
