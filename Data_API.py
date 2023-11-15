@@ -10,37 +10,11 @@ import json, os
 
 app = Flask(__name__)
 
-
 if os.path.exists("Data.json"):
     with open("Data.json") as jin:
         Data = json.load(jin)
 else:
     Data = {"7Z0X": {}, "6M0J": {}}
-
-events_list = [
-   {
-       "id":0,
-       "event_type": "pull_request",
-       "event_name": "change_event"
-   },
-
-
-   {
-       "id":1,
-       "event_type":"release",
-       "event_name":"deployment_event"
-   },
-   {
-       "id":2,
-       "event_type":"push",
-       "event_name":"workflow_event"
-   },
-   {
-       "id":3,
-       "event_type": "pull_request_merged",
-       "event_name":"deployment_event"
-   }
-]
 
 @app.route('/ProteinDesign', methods=['GET'])
 def events():
