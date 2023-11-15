@@ -5,7 +5,7 @@ Created on Fri Nov 10 20:05:38 2023
 @author: Alex
 """
 import MDAnalysis as mda
-import urllib, os, tqdm, subprocess, sys, shutil, copy, re, time, json
+import urllib, os, tqdm, subprocess, sys, shutil, copy, re, time, json, pandas
 from ase import Atoms
 import numpy as np
 from sklearn.metrics import euclidean_distances, r2_score
@@ -379,7 +379,7 @@ if __name__ == "__main__":
             
 
     # Randomly mutate residues and record the interface
-    while len(Data["7Z0X"]) < 5000:
+    while len(Data["7Z0X"]) < 1:
         print(f"Random iteration: ", len(Data["7Z0X"])-2)
         for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
             while Complex_6M0J.interface_seq in Data[idx]:
@@ -440,21 +440,82 @@ if __name__ == "__main__":
     # Cache them so we arent regenerating on each cycle
     PyBioMed_data.to_csv("PyBioMed.csv")
 
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=95)
-    from sklearn.ensemble import RandomForestRegressor
+    # Scale and drop nan
+    c = X - X.min(axis=0)
+    c = c / ((X.max(axis=0) - X.min(axis=0))/2.0)
+    c = c - 1
+    X = c[:,~np.isnan(c).any(axis=0)]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=195)
+    from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
     from sklearn.feature_selection import RFE
     from sklearn.svm import SVR
-    from sklearn.linear_model import RANSACRegressor
-    #model = RandomForestRegressor()
-    support = RFE(Ridge(), n_features_to_select=50, step=20)
+    from sklearn.linear_model import RANSACRegressor, LogisticRegression, LassoLars, ElasticNet, LinearRegression
+    from sklearn.neighbors import KNeighborsRegressor
+    from sklearn.model_selection import RandomizedSearchCV
+    from sklearn.neural_network import MLPRegressor
+    support = RFE(Ridge(), n_features_to_select=10, step=10)
+    #support = RFE(LogisticRegression(), n_features_to_select=50, step=20)
     support = support.fit(X_train, y_train)
     
     X_train = X_train[:,support.support_]
     X_test = X_test[:,support.support_]
     print("Remaining parameters:", support.support_.sum())
     
-    #model = SVR(epsilon=0.5, kernel="rbf", C=10.0)
-    model = RANSACRegressor(Ridge(), min_samples=10)
+    # SVR
+    SVRrbf_param_grid = {
+            "kernel": ["rbf", "poly"],
+            "degree": [0,1,2,3,4,5],
+            "gamma": ["scale", "auto"],
+            "C": np.hstack((np.arange(0.1,1.1, 0.1), np.arange(1, 20, 1))), 
+            "epsilon": np.linspace(0.01, 5, 20), 
+            "max_iter": [-1],
+            "tol": [1.0, 0.1, 0.01, 0.001, 0.0001], 
+            "verbose":[0]}
+    model = SVR()
+    HPO_model = RandomizedSearchCV(estimator = model, param_distributions = SVRrbf_param_grid, 
+                                   cv = 3, n_jobs = 16, verbose = True, n_iter=200, random_state=947)
+    HPO_model.fit(X_train, y_train)
+    print("\nBest params from grid search:")
+    print(HPO_model.best_params_)
+    SVMrbf_hyperparameters = HPO_model.best_params_
+    model = SVR(**SVMrbf_hyperparameters)
+    
+# =============================================================================
+#     RF_param_grid = {'bootstrap': [True, False],
+#                       'criterion': ['squared_error', 'absolute_error'],
+#                       'max_depth': [1,2,3,4,5,None],
+#                       'max_features': ["sqrt", "log2", None],
+#                       'max_leaf_nodes': [None],
+#                       'min_impurity_decrease': [0.0],
+#                       'min_samples_leaf': [1, 2],
+#                       'min_samples_split': [0.5, 1.0],
+#                       'min_weight_fraction_leaf': [0.0, 0.01, 0.1],
+#                       'n_estimators': [10, 100],
+#                       'n_jobs': [4],
+#                       'oob_score': [False],
+#                       'verbose': [False],
+#                       'warm_start': [False, True],
+#                       "random_state":[4]}    
+#     model = ExtraTreesRegressor()
+#     HPO_model = RandomizedSearchCV(estimator = model, param_distributions = RF_param_grid, 
+#                                    cv = 3, n_jobs = 16, verbose = True, n_iter=200, random_state=947)
+#     HPO_model.fit(X_train, y_train)
+#     print("\nBest params from grid search:")
+#     print(HPO_model.best_params_)
+#     RF_hyperparameters = HPO_model.best_params_
+#     model = ExtraTreesRegressor(**HPO_model.best_params_)
+# 
+# =============================================================================
+
+    #model = SVR(epsilon=0.005, kernel="rbf", C=10.0)
+    #model = LassoLars(alpha=0.1)
+    #model = Ridge()
+    model = RANSACRegressor(Ridge(), min_samples=5)
+    #model = ExtraTreesRegressor(max_depth=5)
+    #model = KNeighborsRegressor(n_neighbors=5,  weights='distance', algorithm='auto')
+    #model = RandomForestRegressor()
+    #model = MLPRegressor()
     model.fit(X_train, y_train)
     
     y_train_pred = model.predict(X_train)
@@ -462,9 +523,13 @@ if __name__ == "__main__":
     
     r2 = r2_score(y_test, y_test_pred)
     print("Test r2:", r2)
+    print("Train r2:", r2_score(y_train, y_train_pred))
     
     plt.scatter(y_train, y_train_pred)
     plt.scatter(y_test, y_test_pred)
+    
+    plt.ylabel("Pred")
+    plt.ylabel("Measured")
 
 
 
