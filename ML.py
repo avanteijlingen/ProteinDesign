@@ -27,7 +27,6 @@ class Module(nn.Module):
         self.min = Min
 
     def forward(self, X):
-        
         m = self.fc(X)
         return self.sigmoid(m)*(self.max-self.min)+self.min
     
