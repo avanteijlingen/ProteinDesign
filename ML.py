@@ -11,7 +11,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 
-import tqdm
+import tqdm, pandas
 from sklearn.feature_selection import RFECV, RFE, SelectFromModel
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import RandomizedSearchCV
@@ -193,8 +193,7 @@ if __name__ == "__main__":
         for idx in ["7Z0X", "6M0J"]:
             train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, idx)
             models[idx], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{idx}.pt")
-        
-        sys.exit()
+
 
         # Generate a bunch of potential new sequences to test and select the best on using ML
         candidates = []
@@ -206,19 +205,32 @@ if __name__ == "__main__":
                     Complex_6M0J.reset_seq()
                 Complex_6M0J.Mutate()
             print(Complex_6M0J.interface_seq, "<- Mutated interface sequence")
-            candidates.append(Complex_6M0J.interface_seq)        
-        # Use the ML algorithm to predict the binding energies of a list of random mutated candidates 
-        print("Generating parameters for candidate sequences")
-        X = make_pybiomed_data(candidates)
-        X = X[X_train.columns]
-        print(X.shape)
+            candidates.append(Complex_6M0J.interface_seq)       
+        X_test = make_data(candidates, src_len).squeeze().to(device)
+        
+        # Old classical ML parameters
+# =============================================================================
+#         # Use the ML algorithm to predict the binding energies of a list of random mutated candidates 
+#         print("Generating parameters for candidate sequences")
+#         X = make_pybiomed_data(candidates)
+#         X = X[X_train.columns]
+#         print(X.shape)
+#         candidates_pred = pandas.DataFrame(index=candidates)
+#         for idx in ["7Z0X", "6M0J"]:
+#             candidates_pred[idx] = models[idx].predict(X)
+# =============================================================================
+
+
+        # Make prediction of binding energy with transformer
+        print("Predicting binding energies for candidate sequences")
         candidates_pred = pandas.DataFrame(index=candidates)
-        for target in ["7Z0X", "6M0J"]:
-            candidates_pred[target] = models[target].predict(X)
+        for idx in ["7Z0X", "6M0J"]:
+            candidates_pred[idx] = models[idx](X_test).flatten().cpu().detach().numpy()
         #6M0J (increase), 7Z0X (decrease)
-        candidates_pred["score"] = candidates_pred["6M0J"] + -(candidates_pred["7Z0X"]*3) # put more importance on loss of binding to 7Z0X
+        candidates_pred["score"] = candidates_pred["6M0J"] + -(candidates_pred["7Z0X"]*2) # put more importance on loss of binding to 7Z0X
         candidates_pred = candidates_pred.sort_values("score")
         print(candidates_pred)
+        
         
         # Run the choice
         choice = candidates_pred.iloc[0].name
