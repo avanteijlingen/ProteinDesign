@@ -92,27 +92,27 @@ def from_template(fname: str, original: list, new: list) -> None:
 
 class measure_interface:
     def download_pdb(self):
-        if not os.path.exists(f"{self.active_folder}/{self.code}.pdb"):
-            urllib.request.urlretrieve(f"http://files.rcsb.org/download/{self.code}.pdb", f"{self.active_folder}/{self.code}.pdb") 
+        if not os.path.exists(f"{self.active_folder}/{self.idx}.pdb"):
+            urllib.request.urlretrieve(f"http://files.rcsb.org/download/{self.idx}.pdb", f"{self.active_folder}/{self.idx}.pdb") 
     
     def psf(self):
-        if os.path.exists(f"{self.active_folder}/{self.code}_psfgen.psf"):
-            self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf") # temp, once off fix
+        if os.path.exists(f"{self.active_folder}/{self.idx}_psfgen.psf"):
+            self.fix_psf(f"{self.active_folder}/{self.idx}_psfgen.psf") # temp, once off fix
             return None
-        U = mda.Universe(f"{self.active_folder}/{self.code}.pdb")
+        U = mda.Universe(f"{self.active_folder}/{self.idx}.pdb")
         protein = U.select_atoms("protein")
         pdbs = []
-        for chainID in Chains[self.code]:
+        for chainID in Chains[self.idx]:
             chain = protein.select_atoms(f"chainID {chainID}")
-            pdb_file = f"{self.active_folder}/{self.code}_{chainID}.pdb"
+            pdb_file = f"{self.active_folder}/{self.idx}_{chainID}.pdb"
             # We must rename His to Hse for our forcefield
             chain.residues.resnames = [x.replace("HIS", "HSE") for x in chain.residues.resnames]
             chain.write(pdb_file)
             pdbs.append(pdb_file)
-        writepgn(f"{self.active_folder}/{self.code}.pgn", pdbs, Chains[self.code], f"{self.active_folder}/{self.code}_psfgen")
+        writepgn(f"{self.active_folder}/{self.idx}.pgn", pdbs, Chains[self.idx], f"{self.active_folder}/{self.idx}_psfgen")
         # psfgen adds hydrogens to the structure and creates a topology
-        subprocess.check_output([psfgen, f"{self.active_folder}/{self.code}.pgn"])
-        self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf")
+        subprocess.check_output([psfgen, f"{self.active_folder}/{self.idx}.pgn"])
+        self.fix_psf(f"{self.active_folder}/{self.idx}_psfgen.psf")
     
     def fix_psf(self, psf_file):
         # psfgen is adding numbers to some resids in the psf for 7Z0X chainID L and H, so we will just convert these (82A -> 82)
@@ -135,7 +135,7 @@ class measure_interface:
         # Run a short minimization of the system
         if not os.path.exists(f"{self.active_folder}/Minimization.coor"):
             shutil.copy("Minimize.namd", f"{self.active_folder}/Minimize.namd")
-            from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.code}_psfgen", Path("parameters").absolute().as_posix()])
+            from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.idx}_psfgen", Path("parameters").absolute().as_posix()])
             #subprocess.check_output([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"])
             os.system(" ".join([namd, "+p10", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"]))
         # =============================================================================
@@ -212,7 +212,7 @@ class measure_interface:
             self.original_seq = copy.copy(self.interface_seq)
             
     def load_universe(self, coord_file = "Minimization.coor"):
-        self.U = mda.Universe(f"{self.active_folder}/{self.code}_psfgen.psf", f"{self.active_folder}/{coord_file}")
+        self.U = mda.Universe(f"{self.active_folder}/{self.idx}_psfgen.psf", f"{self.active_folder}/{coord_file}")
         self.U.trajectory[-1]
         self.Spike = self.U.select_atoms(f"segid {self.spike_chainID}")
         self.Receptor = self.U.select_atoms(f"segid {self.receptor_chainID}")
@@ -227,30 +227,30 @@ class measure_interface:
         self.interface_seq = "".join(self.interface_seq)
         
     def MakeMutation(self):
-        self.active_folder = f"MD/{self.code}_{self.interface_seq}"
+        self.active_folder = f"MD/{self.idx}_{self.interface_seq}"
         os.makedirs(self.active_folder, exist_ok=True)
         self.Spike_interface.residues.resnames = pu.translate1to3(self.interface_seq).split("-") # This propogates all the way up the universe
-        pdbs = [f"{self.active_folder}/{self.code}_{self.spike_chainID}.pdb"]
+        pdbs = [f"{self.active_folder}/{self.idx}_{self.spike_chainID}.pdb"]
         segids = [self.spike_chainID]
-        self.Spike.write(f"{self.active_folder}/{self.code}_{self.spike_chainID}.pdb")
+        self.Spike.write(f"{self.active_folder}/{self.idx}_{self.spike_chainID}.pdb")
         for chainID in self.receptor_chainID.split():
-            self.Receptor.select_atoms(f"segid {chainID}").write(f"{self.active_folder}/{self.code}_{chainID}.pdb")
-            pdbs.append(f"{self.active_folder}/{self.code}_{chainID}.pdb")
+            self.Receptor.select_atoms(f"segid {chainID}").write(f"{self.active_folder}/{self.idx}_{chainID}.pdb")
+            pdbs.append(f"{self.active_folder}/{self.idx}_{chainID}.pdb")
             segids.append(chainID)
-        writepgn(f"{self.active_folder}/{self.code}.pgn", 
+        writepgn(f"{self.active_folder}/{self.idx}.pgn", 
                  pdbs, 
                  segids, 
-                 f"{self.active_folder}/{self.code}_psfgen")
-        x = subprocess.check_output([psfgen, f"{self.active_folder}/{self.code}.pgn"])
-        assert os.path.exists(f"{self.active_folder}/{self.code}_psfgen.psf"), f"Couldnt make: {self.active_folder}/{self.code}_psfgen.psf"
-        self.fix_psf(f"{self.active_folder}/{self.code}_psfgen.psf")
+                 f"{self.active_folder}/{self.idx}_psfgen")
+        x = subprocess.check_output([psfgen, f"{self.active_folder}/{self.idx}.pgn"])
+        assert os.path.exists(f"{self.active_folder}/{self.idx}_psfgen.psf"), f"Couldnt make: {self.active_folder}/{self.idx}_psfgen.psf"
+        self.fix_psf(f"{self.active_folder}/{self.idx}_psfgen.psf")
         
     def reset_seq(self):
         self.interface_seq = copy.copy(self.original_seq)
         
-    def __init__(self, code, device):
-        self.code = code
-        self.active_folder = f"MD/{self.code}"
+    def __init__(self, idx, device):
+        self.idx = idx
+        self.active_folder = f"MD/{self.idx}"
         #Initialize
         os.makedirs(f"{self.active_folder}", exist_ok=True)
         self.download_pdb()
@@ -260,8 +260,8 @@ class measure_interface:
         
         self.spike_chainID = ""
         self.receptor_chainID = ""
-        for chainID in Chains[code]:
-            if Chains[code][chainID].upper() == "SPIKE":
+        for chainID in Chains[idx]:
+            if Chains[idx][chainID].upper() == "SPIKE":
                 self.spike_chainID = self.spike_chainID + chainID + " "
             else:
                 self.receptor_chainID = self.receptor_chainID + chainID + " "
@@ -290,8 +290,8 @@ class measure_interface:
 #     response = requests.get(api_url)
 #     return response.json()
 # 
-# def post_entry_to_api(code, seq, entry_data, host="http://localhost:5000"):
-#     api_url = f"{host}/ProteinDesign/{code}/{seq}"
+# def post_entry_to_api(idx, seq, entry_data, host="http://localhost:5000"):
+#     api_url = f"{host}/ProteinDesign/{idx}/{seq}"
 #     print(api_url)
 #     post_data = {"Source": "API_test",
 #                 "hbonds": 6,
@@ -301,7 +301,7 @@ class measure_interface:
 #     response = requests.post(api_url, json=entry_data)
 #     #print(response)
 #     #print(response.json())
-#     print(response.status_code)
+#     print(response.status_idx)
 # =============================================================================
 ## Have to patch this due to lack of networking
 def load_data_from_api():
@@ -312,8 +312,8 @@ def load_data_from_api():
         Data = {"7Z0X": {}, "6M0J": {}}
     return Data
 
-def post_entry_to_api(Data: dict, code: str, seq: str, entry_data: dict):
-    Data[code][seq] = entry_data
+def post_entry_to_api(Data: dict, idx: str, seq: str, entry_data: dict):
+    Data[idx][seq] = entry_data
     shutil.copy("Data.json", "Data.json.bak")
     with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))
 
