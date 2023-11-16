@@ -1639,6 +1639,24 @@
             "hbonds": 8,
             "BindingEnergy": -69.52507885490081,
             "contact surface area": 39.79350694547071
+        },
+        "VSIRGDEQGKIDYNNNSKRGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 8,
+            "BindingEnergy": -154.1773485001144,
+            "contact surface area": 38.22271061867581
+        },
+        "VSIRGDEQGKIDVNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 9,
+            "BindingEnergy": -102.31627018474452,
+            "contact surface area": 42.9350995990605
+        },
+        "VSIRGDEDGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "Random",
+            "hbonds": 11,
+            "BindingEnergy": -117.42758287415707,
+            "contact surface area": 48.17108735504349
         }
     },
     "interface_resid": [
