@@ -237,7 +237,9 @@ n_heads = 8 # number of heads in Multi-Head Attention
 d_ff = 2048 # FeedForward dimension
 src_len = 70
 batch_size = 100 #1024
-
+src_vocab = {'Empty':0, 'A': 1, 'C': 2,'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 
+                'K': 9, 'L': 10, 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15, 'S': 16, 
+                'T': 17, 'V': 18, 'W': 19, 'Y': 20}
 
 def make_data(features, src_len):
     enc_inputs = []
@@ -340,7 +342,6 @@ def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val,
 #                 plt.ylabel("Predicted")
 #                 plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
 #                 plt.show()
-#             
 # =============================================================================
         history["Test loss"].append(test_loss)
     return model, history
@@ -349,9 +350,6 @@ if __name__ == "__main__":
     with open("Data.json") as jin:
         Data = json.load(jin)
     
-    src_vocab = {'Empty':0, 'A': 1, 'C': 2,'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 
-                    'K': 9, 'L': 10, 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15, 'S': 16, 
-                    'T': 17, 'V': 18, 'W': 19, 'Y': 20}
     target = "7Z0X"
     train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
     

@@ -192,8 +192,7 @@ if __name__ == "__main__":
         models = {}
         for idx in ["7Z0X", "6M0J"]:
             train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, idx)
-            sys.exit()
-            models[idx], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint=f"best_{idx}.pt")
+            models[idx], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{idx}.pt")
         
         sys.exit()
 
