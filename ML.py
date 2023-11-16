@@ -157,7 +157,8 @@ def extract_y_data(Data: dict) -> pandas.DataFrame:
     return Y
 
 if __name__ == "__main__":
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     
     # Active machine learning
     for active_learning_iteration in range(1000):
@@ -181,8 +182,8 @@ if __name__ == "__main__":
 # =============================================================================
         
         # Load the RCSB minimized structures
-        Complex_7Z0X = measure_interface("7Z0X")
-        Complex_6M0J = measure_interface("6M0J")
+        Complex_7Z0X = measure_interface("7Z0X", torch.device("cuda")) # struggling to hold all these models in GPU memory so we'll use CUDA in some place and not in other
+        Complex_6M0J = measure_interface("6M0J", torch.device("cuda"))
         for Complex in [Complex_6M0J, Complex_7Z0X]:
             Complex.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
             Complex.load_universe()    
@@ -191,8 +192,8 @@ if __name__ == "__main__":
                 
         models = {}
         for idx in ["7Z0X", "6M0J"]:
-            train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, idx)
-            models[idx], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{idx}.pt")
+            train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, idx, device)
+            models[idx], _ = train_transformer_model(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{idx}.pt")
 
 
         # Generate a bunch of potential new sequences to test and select the best on using ML
@@ -248,6 +249,7 @@ if __name__ == "__main__":
             Complex.BuildInterface()
             #Make measurements and store them
             if Complex.interface_seq not in Data[idx]:
+                print("Measuring the resulting interface")
                 Complex.MeasureInterface()
                 Data = load_data_from_api() # always reload before posting incase there is new data from another source
                 entry = {"Source": "ML-DNN"}

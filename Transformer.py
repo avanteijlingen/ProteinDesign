@@ -222,11 +222,12 @@ class Transformer(nn.Module):
 
         return pred.float()
 
-device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
-#device = "cpu"
-
-print("Device:", device)
-
+# =============================================================================
+# device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+# #device = "cpu"
+# print("Device:", device)
+# =============================================================================
+device = torch.device('cpu')
 d_model = 512 # Embedding size
 src_vocab_size = 21
 lr = 0.002
@@ -250,7 +251,7 @@ def make_data(features, src_len):
         enc_inputs.append(enc_input)
     return torch.LongTensor(enc_inputs)
 
-def encode_data(Data: dict, target: str):
+def encode_data(Data: dict, target: str, device):
     X = np.ndarray((0, src_len), dtype=np.int64)
     Y = np.ndarray((0, ))
     for key in Data[target]:
@@ -270,7 +271,7 @@ def encode_data(Data: dict, target: str):
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     return train_dataloader, test_dataloader, Y.min(), Y.max()
 
-def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname = "best.pt"):
+def train_transformer_model(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname = "best.pt"):
     mse_sum = torch.nn.MSELoss(reduction='sum')
     model = Transformer(Min=Min_val, Max=Max_val)
     model.to(device)

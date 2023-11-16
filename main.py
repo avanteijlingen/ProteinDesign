@@ -248,8 +248,7 @@ class measure_interface:
     def reset_seq(self):
         self.interface_seq = copy.copy(self.original_seq)
         
-    def __init__(self, code):
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    def __init__(self, code, device):
         self.code = code
         self.active_folder = f"MD/{self.code}"
         #Initialize
@@ -321,8 +320,8 @@ def post_entry_to_api(Data: dict, code: str, seq: str, entry_data: dict):
 
 if __name__ == "__main__":
     np.random.seed(435634)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    #device = torch.device('cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     
     # For AIMNet backend
     torch.backends.cuda.matmul.allow_tf32 = False
@@ -330,8 +329,8 @@ if __name__ == "__main__":
     
     Data = load_data_from_api()
 
-    Complex_7Z0X = measure_interface("7Z0X")
-    Complex_6M0J = measure_interface("6M0J")
+    Complex_7Z0X = measure_interface("7Z0X", device)
+    Complex_6M0J = measure_interface("6M0J", device)
     
     # First determine which residues are part of the interface
     # We want to get them from both complexes and stack them together since they mostly but not entirely overlap
