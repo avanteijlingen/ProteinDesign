@@ -26,38 +26,7 @@ from main import *
 from Transformer import *
 
 pandas.set_option('display.max_columns', 5)
-
-
-# =============================================================================
-# class Module(nn.Module):
-#     def __init__(self, Min, Max, input_size):
-#         super(Module, self).__init__()
-#         self.sigmoid = nn.Sigmoid()
-#         
-#         self.layer0 = nn.Linear(input_size, 20, bias=True)
-#         self.relu = nn.ReLU()
-#         self.layer1 = nn.Linear(20, 1, bias=True)
-# # =============================================================================
-# # 
-# #         self.fc = nn.Sequential(
-# #             
-# #             #,
-# #             nn.Linear(100, 50, bias=True),
-# #             nn.Linear(50, 5, bias=True),
-# #             nn.Linear(5, 1, bias=True)
-# #         )
-# # =============================================================================
-#                 
-#         self.max = Max
-#         self.min = Min
-# 
-#     def forward(self, X):
-#         m = self.layer0(X)
-#         m = self.relu(m)
-#         m = self.layer1(m)
-#         return self.sigmoid(m)*(self.max-self.min)+self.min
-# =============================================================================
-    
+   
 def make_pybiomed_data(sequences: list) -> np.ndarray:
     if os.path.exists("PyBioMed.csv"):
         PyBioMed_data = pandas.read_csv("PyBioMed.csv", index_col=0)
@@ -89,14 +58,6 @@ def make_pybiomed_data(sequences: list) -> np.ndarray:
     # Cache them so we arent regenerating on each cycle
     PyBioMed_data.to_csv("PyBioMed.csv")
     print("PyBioMed_data.shape:", PyBioMed_data.shape)
-    # Scale and drop nan
-# =============================================================================
-#     c = X - X.min(axis=0)
-#     c = c / ((X.max(axis=0) - X.min(axis=0))/2.0)
-#     c = c - 1
-#     X = c[:,~np.isnan(c).any(axis=0)]
-#     cols = PyBioMed_data.columns[~np.isnan(c).any(axis=0)]
-# =============================================================================
     cols = PyBioMed_data.columns
     X = pandas.DataFrame(X, columns=cols)
     return X
@@ -159,37 +120,70 @@ def extract_y_data(Data: dict) -> pandas.DataFrame:
 if __name__ == "__main__":
     #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device('cpu')
+        
+    Data = load_data_from_api()
     
+    # Load the RCSB minimized structures
+    Complex_7Z0X = measure_interface("7Z0X", torch.device("cpu")) # struggling to hold all these models in GPU memory so we'll use CUDA in some place and not in other
+    Complex_6M0J = measure_interface("6M0J", torch.device("cuda"))
+    for Complex in [Complex_6M0J, Complex_7Z0X]:
+        Complex.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
+    
+    # Check for missing pairs we can fill in
+    missing = []
+    for seq in Data["7Z0X"]:
+        if len(seq) != 70:
+            continue
+        if seq not in Data["6M0J"]:
+            missing.append(seq)
+    if len(missing) > 0:
+        print(f"Found {len(missing)} sequences in 6M0J that we have for 7Z0X")
+        for seq in missing:
+            print("Filling in for:", seq)
+            Complex_6M0J.active_folder = f"MD/{Complex_6M0J.idx}"
+            Complex_6M0J.load_universe()    
+            Complex_6M0J.FindInterface()
+            Complex_6M0J.BuildInterface()
+            Complex_6M0J.interface_seq = seq
+            
+            Complex_6M0J.MakeMutation()
+            print(f"Running minimization with {namd}")
+            Complex_6M0J.Minimize()
+            if not os.path.exists(f"{Complex.active_folder}/Minimization.coor"):
+                print("Minimization failed, skipping")
+                continue
+            Complex_6M0J.load_universe()
+            Complex_6M0J.FindInterface() # If we have already set self.spike_interface_resids then use this
+            Complex_6M0J.BuildInterface()
+            print("Making measurements")
+            Complex_6M0J.MeasureInterface()
+            Data = load_data_from_api() # always reload before posting incase there is new data from another source
+            entry = {"Source": Data["7Z0X"][idx]["Source"]}
+            entry.update(Complex_6M0J.score)
+            post_entry_to_api(Data, idx, Complex_6M0J.interface_seq, entry)
+            Data = load_data_from_api() # always reload after posting incase there is new data from another source
+  
+    
+        
+    sys.exit()
     # Active machine learning
     for active_learning_iteration in range(1000):
+        # Reset the active folder to the wild type
+        for Complex in [Complex_6M0J, Complex_7Z0X]:
+            Complex.active_folder = f"MD/{Complex.idx}"
+            Complex.load_universe()    
+            Complex.FindInterface()
+            Complex.BuildInterface()
+
+        # Load database again, do it very time incase multiple instance are runnign
         Data = load_data_from_api()
         for code in ["7Z0X", "6M0J"]:
             for seq in copy.copy(list(Data[code].keys())):
                 if Data[code][seq] is None:
                     print(seq)
                     del Data[code][seq]
-        nML = len([x for x in Data["7Z0X"] if "ML" in Data["7Z0X"][x]["Source"]])
-# =============================================================================
-#         training_data_labels = np.unique(list(Data["7Z0X"].keys())+list(Data["6M0J"].keys()))
-#         X = make_pybiomed_data(training_data_labels)
-#         Y = extract_y_data(Data)
-#         X = X.iloc[Y["i"].values]
-#         # Remove parametres with low variance
-#         sel = VarianceThreshold(threshold=(.8 * (1 - .8)))
-#         sel.fit(X)
-#         X = X[X.columns[sel.get_support()]]
-#         print(X)
-# =============================================================================
-        
-        # Load the RCSB minimized structures
-        Complex_7Z0X = measure_interface("7Z0X", torch.device("cuda")) # struggling to hold all these models in GPU memory so we'll use CUDA in some place and not in other
-        Complex_6M0J = measure_interface("6M0J", torch.device("cuda"))
-        for Complex in [Complex_6M0J, Complex_7Z0X]:
-            Complex.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
-            Complex.load_universe()    
-            Complex.FindInterface()
-            Complex.BuildInterface()
-                
+        #nML = len([x for x in Data["7Z0X"] if "ML" in Data["7Z0X"][x]["Source"]])
+
         models = {}
         for idx in ["7Z0X", "6M0J"]:
             train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, idx, device)
@@ -199,7 +193,6 @@ if __name__ == "__main__":
         # Generate a bunch of potential new sequences to test and select the best on using ML
         candidates = []
         while len(candidates) < 100:
-            #print(Complex_6M0J.interface_seq in Data["6M0J"])
             while Complex_6M0J.interface_seq in Data["6M0J"] or Complex_6M0J.interface_seq in candidates:
                 #print(Complex_6M0J.interface_seq, "found in Data, mutating")
                 if len(candidates) % 10 == 0:
