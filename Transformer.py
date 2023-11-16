@@ -268,7 +268,7 @@ def encode_data(Data: dict, target: str):
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     return train_dataloader, test_dataloader, Y.min(), Y.max()
 
-def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint = "best.pt"):
+def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname = "best.pt"):
     mse_sum = torch.nn.MSELoss(reduction='sum')
     model = Transformer(Min=Min_val, Max=Max_val)
     model.to(device)
@@ -278,12 +278,12 @@ def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val,
     SGD_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(SGD, factor=0.2, patience=1000, threshold=0, 
                                                                min_lr = 0.000001, verbose=True)
     # Load model if exists
-    if os.path.exists(checkpoint):
-        print("Loading from:", checkpoint)
+    if os.path.exists(checkpoint_fname):
+        print("Loading from:", checkpoint_fname)
         if device.type == "cpu":
-            checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
+            checkpoint = torch.load(checkpoint_fname, map_location=torch.device('cpu'))
         else:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint_fname)
         model.load_state_dict(checkpoint)
         #SGD.load_state_dict(checkpoint['SGD'])
         #SGD_scheduler.load_state_dict(checkpoint['SGD_scheduler'])
@@ -331,7 +331,7 @@ def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val,
         
         if epoch > 0:
             if test_loss < min(history["Test loss"]):
-                torch.save(model.state_dict(), checkpoint)
+                torch.save(model.state_dict(), checkpoint_fname)
 # =============================================================================
 #                 plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
 #                 plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8)
@@ -356,7 +356,7 @@ if __name__ == "__main__":
     train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
     
     models = {}
-    models[target], _ = train_transformer_model(Min_val, Max_val, checkpoint=f"best_{target}.pt")
+    models[target], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{target}.pt")
 
 
 
