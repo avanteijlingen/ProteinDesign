@@ -196,8 +196,8 @@ class measure_interface:
     def FindInterface(self):
         # Use this if we have already determined which resids are part of the interface
         d = euclidean_distances(self.Spike.select_atoms(f"resid {self.spike_interface_resids}").positions, self.Receptor.positions)
-        Receptor_interface = self.Receptor[d.min(axis=0) < self.interface_cutoff]
-        self.Receptor_resids = " ".join(np.unique(Receptor_interface.resids).astype(np.str_))
+        Receptor_interface_partial = self.Receptor[d.min(axis=0) < self.interface_cutoff]
+        self.Receptor_resids = " ".join(np.unique(Receptor_interface_partial.resids).astype(np.str_))
 
     def BuildInterface(self):
         self.Spike_interface = self.Spike.select_atoms(f"resid {self.spike_interface_resids}")
