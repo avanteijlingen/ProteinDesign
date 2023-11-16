@@ -34,10 +34,6 @@ import peptideutils as pu
 # page 20 Mutation of tyrosine into alanine
 # =============================================================================
 
-# Should be in a dotenv
-#vmd_dir = "C:/Program Files (x86)/University of Illinois/VMD/plugins/noarch/tcl/readcharmmtop1.2/"
-#psfgen = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/psfgen.exe"
-#namd = "C:/Users/Alex/Documents/NAMD_2.14_Win64-multicore-CUDA/namd2.exe"
 vmd_dir = os.environ["VMDTOP"]
 psfgen = os.environ["PSFGEN"]
 namd = os.environ["NAMD"]
