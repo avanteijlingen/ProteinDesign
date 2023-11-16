@@ -5,7 +5,7 @@ Created on Fri Nov 10 20:05:38 2023
 @author: Alex
 """
 import MDAnalysis as mda
-import urllib, os, tqdm, subprocess, sys, shutil, copy, re, time, json, pandas, requests
+import urllib, os, subprocess, sys, shutil, copy, re, time, json, pandas, requests
 from ase import Atoms
 import numpy as np
 from sklearn.metrics import euclidean_distances, r2_score

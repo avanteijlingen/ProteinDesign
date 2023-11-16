@@ -315,25 +315,25 @@ if os.path.exists(latest_checkpoint) and 1==1:
     model.load_state_dict(checkpoint['nn'])
     SGD.load_state_dict(checkpoint['SGD'])
     SGD_scheduler.load_state_dict(checkpoint['SGD_scheduler'])
-    
-for epoch in range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500):
+
+history = {"Test loss": [], "Train loss": []}
+for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500)):
     LossSum = None
     model.train()
     total_mse = 0
     count = 0
-    for X_train, y_train in tqdm.tqdm(train_dataloader):
+    for X_train, y_train in train_dataloader:
         SGD.zero_grad()
         pred = model(X_train)
         pred = pred.flatten()
         loss = torch.sqrt(loss_function(pred, y_train))
-        
         total_mse += mse_sum(pred, y_train).item()
         count += pred.size(0)
-        
         loss.backward()
         SGD.step()
         
     loss = math.sqrt(total_mse / count)
+    history["Train loss"].append(loss)
     SGD_scheduler.step(loss)
     
     
@@ -348,25 +348,30 @@ for epoch in range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500):
     
     model.eval()
     
-    for X_train, y_train in tqdm.tqdm(train_dataloader):
+    for X_train, y_train in train_dataloader:
         predict = model(X_train).reshape(-1)
         pred_y = predict.cpu().detach().numpy().flatten()
-        plt.scatter(y_train.cpu().detach().numpy().flatten(), pred_y, s=11, color="blue", alpha=0.8)
+        #plt.scatter(y_train.cpu().detach().numpy().flatten(), pred_y, s=11, color="blue", alpha=0.8)
         
     total_mse = 0
     count = 0
     true_all = np.ndarray((0,))
     pred_all = np.ndarray((0,))
-    for X_test, y_test in tqdm.tqdm(test_dataloader):
+    for X_test, y_test in test_dataloader:
         predict = model(X_test).reshape(-1)
         pred_y = predict.cpu().detach().numpy().flatten()
         pred_all = np.hstack((pred_all, pred_y))
         true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
-        plt.scatter(y_test.cpu().detach().numpy().flatten(), pred_y, s=11, color="orange", alpha=0.8)
         total_mse += mse_sum(predict, y_test).item()
         count += predict.size(0)
     test_loss = math.sqrt(total_mse / count)
-    plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
     r2 = r2_score(pred_all, true_all)
-    plt.title(f"Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
-    plt.show()
+    
+    history["Test loss"].append(loss)
+    
+    if epoch %10 ==0:
+        plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
+        plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
+        plt.xlabel("Measured", "Predicted")
+        plt.title(f"Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+        plt.show()

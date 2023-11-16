@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 
+import tqdm
 from sklearn.feature_selection import RFECV, RFE, SelectFromModel
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import RandomizedSearchCV
@@ -25,23 +26,33 @@ from main import *
 
 pandas.set_option('display.max_columns', 5)
 
+
 class Module(nn.Module):
     def __init__(self, Min, Max, input_size):
         super(Module, self).__init__()
         self.sigmoid = nn.Sigmoid()
-
-        self.fc = nn.Sequential(
-            nn.Linear(input_size, 50, bias=False),
-            nn.ReLU(),
-            nn.Linear(50, 5, bias=False),
-            nn.Linear(5, 1, bias=False)
-        )
+        
+        self.layer0 = nn.Linear(input_size, 20, bias=True)
+        self.relu = nn.ReLU()
+        self.layer1 = nn.Linear(20, 1, bias=True)
+# =============================================================================
+# 
+#         self.fc = nn.Sequential(
+#             
+#             #,
+#             nn.Linear(100, 50, bias=True),
+#             nn.Linear(50, 5, bias=True),
+#             nn.Linear(5, 1, bias=True)
+#         )
+# =============================================================================
                 
         self.max = Max
         self.min = Min
 
     def forward(self, X):
-        m = self.fc(X)
+        m = self.layer0(X)
+        m = self.relu(m)
+        m = self.layer1(m)
         return self.sigmoid(m)*(self.max-self.min)+self.min
     
 def make_pybiomed_data(sequences: list) -> np.ndarray:
@@ -87,20 +98,27 @@ def make_pybiomed_data(sequences: list) -> np.ndarray:
     X = pandas.DataFrame(X, columns=cols)
     return X
 
-def gen_model(X_data: np.ndarray, Y_data: np.ndarray):
-    X_train, X_test, y_train, y_test = train_test_split(X_data.astype(np.float32), Y_data, test_size=0.2, shuffle=True, random_state=95)
-    #feature_reducer = RFE(Ridge(), n_features_to_select=50, step=10, n_jobs=10)
-    #feature_reducer = RFECV(Ridge(), min_features_to_select=40, step=10, cv=3, scoring="neg_mean_squared_error", n_jobs=10)
+def reduce_n_features(X_train, y_train):
     feature_reducer = SelectFromModel(Ridge(), max_features=40)
     feature_reducer = feature_reducer.fit(X_train, y_train)
     try:
         support = feature_reducer.support_
     except AttributeError:
         support = feature_reducer.get_support()
+    return support
+
+def split_and_reduce_dataset(X_, Y_):
+    X_train, X_test, y_train, y_test = train_test_split(X_.astype(np.float32), Y_, test_size=0.2, shuffle=True, random_state=95)
+    #feature_reducer = RFE(Ridge(), n_features_to_select=50, step=10, n_jobs=10)
+    #feature_reducer = RFECV(Ridge(), min_features_to_select=40, step=10, cv=3, scoring="neg_mean_squared_error", n_jobs=10)
+    support = reduce_n_features(X_train, y_train)
     X_train = X_train[X_train.columns[support]]
     X_test = X_test[X_test.columns[support]]
-    #X_train = X_train[:,support]
-    #X_test = X_test[:,support]
+    return X_train, X_test, y_train, y_test
+    
+    
+def gen_model(X_data: np.ndarray, Y_data: np.ndarray):
+    X_train, X_test, y_train, y_test = split_and_reduce_dataset(X_data, Y_data)
     print("Remaining parameters:", support.sum())
     SVRrbf_param_grid = {
             "kernel": ["rbf", "poly"],
@@ -120,7 +138,9 @@ def gen_model(X_data: np.ndarray, Y_data: np.ndarray):
     print(HPO_model.best_params_)
     SVMrbf_hyperparameters = HPO_model.best_params_
     return SVR(**SVMrbf_hyperparameters), X_train, X_test, y_train, y_test
-    
+
+
+
 def extract_y_data(Data: dict) -> pandas.DataFrame:
     Y = pandas.DataFrame()
     for i, seq in enumerate(training_data_labels):
@@ -137,15 +157,14 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Active machine learning
-    for active_learning_iteration in range(1):
-        nML = len([x for x in Data["7Z0X"] if Data["7Z0X"][x]["Source"] == "ML"])
+    for active_learning_iteration in range(1000):
         Data = load_data_from_api()
         for code in ["7Z0X", "6M0J"]:
             for seq in copy.copy(list(Data[code].keys())):
                 if Data[code][seq] is None:
                     print(seq)
                     del Data[code][seq]
-    
+        nML = len([x for x in Data["7Z0X"] if "ML" in Data["7Z0X"][x]["Source"]])
         training_data_labels = np.unique(list(Data["7Z0X"].keys())+list(Data["6M0J"].keys()))
         X = make_pybiomed_data(training_data_labels)
         Y = extract_y_data(Data)
@@ -167,7 +186,7 @@ if __name__ == "__main__":
         
         # Generate a bunch of potential new sequences to test and select the best on using ML
         candidates = []
-        while len(candidates) < 1000:
+        while len(candidates) < 100:
             #print(Complex_6M0J.interface_seq in Data["6M0J"])
             while Complex_6M0J.interface_seq in Data["6M0J"] or Complex_6M0J.interface_seq in candidates:
                 #print(Complex_6M0J.interface_seq, "found in Data, mutating")
@@ -178,23 +197,112 @@ if __name__ == "__main__":
             candidates.append(Complex_6M0J.interface_seq)
         
         models = {}
-        title = "ML {nML}"
+        title = f"ML {nML}"
+        history = {"Test loss": [], "Train loss": []}
         for target in ["7Z0X", "6M0J"]:
-            models[target], X_train, X_test, y_train, y_test = gen_model(X, Y[target].values.flatten())
-            models[target].fit(X_train, y_train)
-            y_train_pred = models[target].predict(X_train)
-            y_test_pred = models[target].predict(X_test)
-            r2 = r2_score(y_test, y_test_pred)
-            print(target, "Test r2:", r2)
-            print(target, "Train r2:", r2_score(y_train, y_train_pred))
-            plt.scatter(y_train, y_train_pred, label=f"{target} Train")
-            plt.scatter(y_test, y_test_pred, label=f"{target} Test")
-            plt.xlabel("Measured")
-            plt.ylabel("Pred")
-            title = title + f" - {target} Test r2 {r2:.2f}"
-        plt.legend()
+            #models[target], X_train, X_test, y_train, y_test = gen_model(X, Y[target].values.flatten())
+            #models[target].fit(X_train, y_train)
+            X_train, X_test, y_train, y_test = split_and_reduce_dataset(X, Y[target].values.flatten())
+            
+            batch_size = 50
+            mse_sum = torch.nn.MSELoss(reduction='sum')
+            models[target] = Module(Min=Y[target].min(), Max=Y[target].max(), input_size=X_train.shape[1])
+            models[target].to(device)
+            
+            torch.nn.init.kaiming_normal_(models[target].layer0.weight, a=1.0)
+            torch.nn.init.uniform_(models[target].layer0.bias)
+            #torch.nn.init.zeros_(m.bias)
+        
+            loss_function = nn.MSELoss()
+            #loss_function = r2_score
+            SGD = torch.optim.SGD(models[target].parameters(), lr=0.1)
+            SGD_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(SGD, factor=0.2, patience=100, threshold=0, 
+                                                                       min_lr = 0.000001, verbose=True)
+            
+            X_train = torch.from_numpy(X_train.values).to(device)
+            y_train = torch.from_numpy(y_train).float().to(device)
+            X_test = torch.from_numpy(X_test.values).to(device)
+            y_test = torch.from_numpy(y_test).to(device)
+            
+            train_dataset = TensorDataset(X_train, y_train)
+            train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+            
+            test_dataset = TensorDataset(X_test, y_test)
+            test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+            
+            for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500)):
+                LossSum = None
+                models[target].train()
+                total_mse = 0
+                count = 0
+                for X_train, y_train in train_dataloader:
+                    SGD.zero_grad()
+                    pred = models[target](X_train)
+                    pred = pred.flatten()
+                    loss = torch.sqrt(loss_function(pred, y_train))
+                    total_mse += mse_sum(pred, y_train).item()
+                    count += pred.size(0)
+                    
+                    loss.backward()
+                    SGD.step()
+                loss = np.sqrt(total_mse / count)
+                history["Train loss"].append(loss.item())
+                SGD_scheduler.step(loss)
+                models[target].eval()
+# =============================================================================
+#                 for X_train, y_train in tqdm.tqdm(train_dataloader):
+#                     predict = models[target](X_train).reshape(-1)
+#                     pred_y = predict.cpu().detach().numpy().flatten()
+#                     #plt.scatter(y_train.cpu().detach().numpy().flatten(), pred_y, s=11, color="blue", alpha=0.8)
+# =============================================================================
+                    
+                total_mse = 0
+                count = 0
+                true_all = np.ndarray((0,))
+                pred_all = np.ndarray((0,))
+                for X_test, y_test in test_dataloader:
+                    predict = models[target](X_test).reshape(-1)
+                    pred_y = predict.cpu().detach().numpy().flatten()
+                    pred_all = np.hstack((pred_all, pred_y))
+                    true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
+                    #plt.scatter(y_test.cpu().detach().numpy().flatten(), pred_y, s=10, color="orange", alpha=0.9)
+                    total_mse += mse_sum(predict, y_test).item()
+                    count += predict.size(0)
+                test_loss = np.sqrt(total_mse / count)
+                history["Test loss"].append(test_loss.item())
+                r2 = r2_score(pred_all, true_all)
+                #plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
+                #plt.title(f"Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+                #plt.show()
+            
+            plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
+            plt.scatter(y_test.cpu().detach().numpy().flatten(), pred_y, s=10, color="orange", alpha=0.9)
+            plt.show()
+            plt.plot(history["Train loss"])
+            plt.plot(history["Test loss"])
+            
+            sys.exit()
+        sys.exit()
+            
+            
+            
+# =============================================================================
+#             y_train_pred = models[target].predict(X_train)
+#             y_test_pred = models[target].predict(X_test)
+#             r2 = r2_score(y_test, y_test_pred)
+#             print(target, "Test r2:", r2)
+#             print(target, "Train r2:", r2_score(y_train, y_train_pred))
+#             plt.scatter(y_train, y_train_pred, label=f"{target} Train")
+#             plt.scatter(y_test, y_test_pred, label=f"{target} Test")
+#             plt.xlabel("Measured")
+#             plt.ylabel("Pred")
+#             title = title + f" - {target} Test r2 {r2:.2f}"
+#         plt.title(title)
+#         plt.legend()
+# =============================================================================
         
         # Use the ML algorithm to predict the binding energies of a list of random mutated candidates 
+        print("Generating parameters for candidate sequences")
         X = make_pybiomed_data(candidates)
         X = X[X_train.columns]
         print(X.shape)
@@ -224,7 +332,7 @@ if __name__ == "__main__":
             if Complex.interface_seq not in Data[idx]:
                 Complex.MeasureInterface()
                 Data = load_data_from_api() # always reload before posting incase there is new data from another source
-                entry = {"Source": "ML"}
+                entry = {"Source": "ML-DNN"}
                 entry.update(Complex.score)
                 post_entry_to_api(Data, idx, Complex.interface_seq, entry)
                 Data = load_data_from_api() # always reload after posting incase there is new data from another source
@@ -235,74 +343,3 @@ if __name__ == "__main__":
             
             
             
-# =============================================================================
-#     batch_size = 10
-#     mse_sum = torch.nn.MSELoss(reduction='sum')
-#     model = Module(Min=Y.min(), Max=Y.max(), input_size=X_train.shape[1])
-#     model.to(device)
-#     loss_function = nn.MSELoss()
-#     #loss_function = r2_score
-#     SGD = torch.optim.SGD(model.parameters(), lr=0.002)
-#     SGD_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(SGD, factor=0.2, patience=100, threshold=0, 
-#                                                                min_lr = 0.000001, verbose=True)
-#     
-#     X_train = torch.from_numpy(X_train).to(device)
-#     y_train = torch.from_numpy(y_train).float().to(device)
-#     X_test = torch.from_numpy(X_test).to(device)
-#     y_test = torch.from_numpy(y_test).to(device)
-#     
-#     train_dataset = TensorDataset(X_train, y_train)
-#     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
-#     
-#     test_dataset = TensorDataset(X_test, y_test)
-#     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-#     
-#     for epoch in range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500):
-#         LossSum = None
-#         model.train()
-#         total_mse = 0
-#         count = 0
-#         for X_train, y_train in tqdm.tqdm(train_dataloader):
-#             SGD.zero_grad()
-#             pred = model(X_train)
-#             pred = pred.flatten()
-#             loss = torch.sqrt(loss_function(pred, y_train))
-#             
-#             total_mse += mse_sum(pred, y_train).item()
-#             count += pred.size(0)
-#             
-#             loss.backward()
-#             SGD.step()
-#             
-#         loss = np.sqrt(total_mse / count)
-#         SGD_scheduler.step(loss)
-#         
-#     
-#         model.eval()
-#         for X_train, y_train in tqdm.tqdm(train_dataloader):
-#             predict = model(X_train).reshape(-1)
-#             pred_y = predict.cpu().detach().numpy().flatten()
-#             plt.scatter(y_train.cpu().detach().numpy().flatten(), pred_y, s=11, color="blue", alpha=0.8)
-#             
-#         total_mse = 0
-#         count = 0
-#         true_all = np.ndarray((0,))
-#         pred_all = np.ndarray((0,))
-#         for X_test, y_test in tqdm.tqdm(test_dataloader):
-#             predict = model(X_test).reshape(-1)
-#             pred_y = predict.cpu().detach().numpy().flatten()
-#             pred_all = np.hstack((pred_all, pred_y))
-#             true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
-#             plt.scatter(y_test.cpu().detach().numpy().flatten(), pred_y, s=10, color="orange", alpha=0.9)
-#             total_mse += mse_sum(predict, y_test).item()
-#             count += predict.size(0)
-#         test_loss = np.sqrt(total_mse / count)
-#         plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
-#         r2 = r2_score(pred_all, true_all)
-#         plt.title(f"Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
-#         plt.show()
-#     
-# =============================================================================
-    
-    
-    
