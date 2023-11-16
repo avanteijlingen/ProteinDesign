@@ -19,23 +19,6 @@ from torch.utils.data import DataLoader, TensorDataset
 from torch.autograd import Variable
 
 
-device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
-#device = "cpu"
-
-print("Device:", device)
-
-d_model = 512 # Embedding size
-src_vocab_size = 21
-lr = 0.002
-n_layers = 6 # number of Encoder and Decoder Layer
-d_k = 64 # dimension of K(=Q), V
-d_v = 64 # dimension of K(=Q), V
-n_heads = 8 # number of heads in Multi-Head Attention
-d_ff = 2048 # FeedForward dimension
-src_len = 70
-batch_size = 100 #1024
-
-
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout=0.1, max_len=5000):
         super(PositionalEncoding, self).__init__()
@@ -238,16 +221,23 @@ class Transformer(nn.Module):
         pred = self.decoder(dec_inputs)
 
         return pred.float()
-    
-# Since this program is non-generic we will define everything we need
-Chains = {"6M0J": {"A": "ACE2",
-                   "E": "Spike"
-                  }, # Prot_A-Prot_C, THSC20.HVTR26 Fab bound to SARS-CoV-2 Receptor Binding Domain
-          "7Z0X": {"H": "Antibody heavy chain",
-                   "L": "Antibody light chain",
-                   "R": "Spike",
-                   } # Prot_A-Prot_B, Crystal structure of SARS-CoV-2 spike receptor-binding domain bound with ACE2
-         }
+
+device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+#device = "cpu"
+
+print("Device:", device)
+
+d_model = 512 # Embedding size
+src_vocab_size = 21
+lr = 0.002
+n_layers = 6 # number of Encoder and Decoder Layer
+d_k = 64 # dimension of K(=Q), V
+d_v = 64 # dimension of K(=Q), V
+n_heads = 8 # number of heads in Multi-Head Attention
+d_ff = 2048 # FeedForward dimension
+src_len = 70
+batch_size = 100 #1024
+
 
 with open("Data.json") as jin:
     Data = json.load(jin)
@@ -266,112 +256,107 @@ def make_data(features, src_len):
         enc_inputs.append(enc_input)
     return torch.LongTensor(enc_inputs)
 
-X = np.ndarray((0, src_len), dtype=np.int64)
-Y = np.ndarray((0, ))
-for key in Data["7Z0X"]:
-    #Data.at[key, "BE"] = 
-    
-    print(key)
-    if key == "XRD":
-        continue
-    
-    x = make_data([list(key)], len(key)).numpy()
-    
-    X = np.vstack((X, x.reshape(1, src_len)))
-    Y = np.hstack((Y, Data["7Z0X"][key]["BindingEnergy"]))
-    
+def encode_data(Data: dict, target: str):
+    X = np.ndarray((0, src_len), dtype=np.int64)
+    Y = np.ndarray((0, ))
+    for key in Data[target]:
+        if len(key) != src_len:
+            continue
+        x = make_data([list(key)], len(key)).numpy()
+        X = np.vstack((X, x.reshape(1, src_len)))
+        Y = np.hstack((Y, Data[target][key]["BindingEnergy"]))
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=95)
+    X_train = torch.from_numpy(X_train).to(device)
+    y_train = torch.from_numpy(y_train).float().to(device)
+    X_test = torch.from_numpy(X_test).to(device)
+    y_test = torch.from_numpy(y_test).to(device)
+    train_dataset = TensorDataset(X_train, y_train)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+    test_dataset = TensorDataset(X_test, y_test)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    return train_dataloader, test_dataloader, Y.min(), Y.max()
 
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=95)
-
-X_train = torch.from_numpy(X_train).to(device)
-y_train = torch.from_numpy(y_train).float().to(device)
-X_test = torch.from_numpy(X_test).to(device)
-y_test = torch.from_numpy(y_test).to(device)
-
-train_dataset = TensorDataset(X_train, y_train)
-train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
-
-test_dataset = TensorDataset(X_test, y_test)
-test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-
-mse_sum = torch.nn.MSELoss(reduction='sum')
-model = Transformer(Min=Y.min(), Max=Y.max())
-model.to(device)
-loss_function = nn.MSELoss()
-#loss_function = r2_score
-SGD = torch.optim.SGD(model.parameters(), lr=lr)
-SGD_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(SGD, factor=0.2, patience=1000, threshold=0, 
-                                                           min_lr = 0.000001, verbose=True)
-
-# Load model if exists
-latest_checkpoint = "latest.pt"
-if os.path.exists(latest_checkpoint) and 1==1:
-    print("Loading from:", latest_checkpoint)
-    if device.type == "cpu":
-        checkpoint = torch.load(latest_checkpoint, map_location=torch.device('cpu'))
-    else:
-        checkpoint = torch.load(latest_checkpoint)
-    model.load_state_dict(checkpoint['nn'])
-    SGD.load_state_dict(checkpoint['SGD'])
-    SGD_scheduler.load_state_dict(checkpoint['SGD_scheduler'])
-
-history = {"Test loss": [], "Train loss": []}
-for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+500)):
-    LossSum = None
-    model.train()
-    total_mse = 0
-    count = 0
-    for X_train, y_train in train_dataloader:
-        SGD.zero_grad()
-        pred = model(X_train)
-        pred = pred.flatten()
-        loss = torch.sqrt(loss_function(pred, y_train))
-        total_mse += mse_sum(pred, y_train).item()
-        count += pred.size(0)
-        loss.backward()
-        SGD.step()
+def train_transformer_model(checkpoint = "best.pt"):
+    mse_sum = torch.nn.MSELoss(reduction='sum')
+    model = Transformer(Min=Min_val, Max=Max_val)
+    model.to(device)
+    loss_function = nn.MSELoss()
+    #loss_function = r2_score
+    SGD = torch.optim.SGD(model.parameters(), lr=lr)
+    SGD_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(SGD, factor=0.2, patience=1000, threshold=0, 
+                                                               min_lr = 0.000001, verbose=True)
+    # Load model if exists
+    if os.path.exists(checkpoint):
+        print("Loading from:", checkpoint)
+        if device.type == "cpu":
+            checkpoint = torch.load(checkpoint, map_location=torch.device('cpu'))
+        else:
+            checkpoint = torch.load(checkpoint)
+        model.load_state_dict(checkpoint)
+        #SGD.load_state_dict(checkpoint['SGD'])
+        #SGD_scheduler.load_state_dict(checkpoint['SGD_scheduler'])
+    history = {"Test loss": [], "Train loss": []}
+    for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+21)):
+        LossSum = None
+        model.train()
+        total_mse = 0
+        count = 0
+        for X_train, y_train in train_dataloader:
+            SGD.zero_grad()
+            pred = model(X_train)
+            pred = pred.flatten()
+            loss = torch.sqrt(loss_function(pred, y_train))
+            total_mse += mse_sum(pred, y_train).item()
+            count += pred.size(0)
+            loss.backward()
+            SGD.step()
+        loss = math.sqrt(total_mse / count)
+        history["Train loss"].append(loss)
+        SGD_scheduler.step(loss)
         
-    loss = math.sqrt(total_mse / count)
-    history["Train loss"].append(loss)
-    SGD_scheduler.step(loss)
-    
-    
-# =============================================================================
-#     torch.save({
-#         'nn': model.state_dict(),
-#         'SGD': SGD.state_dict(),
-#         'SGD_scheduler': SGD_scheduler.state_dict(),
-#     }, latest_checkpoint)
-# =============================================================================
-    
-    
-    model.eval()
-    
-    for X_train, y_train in train_dataloader:
-        predict = model(X_train).reshape(-1)
-        pred_y = predict.cpu().detach().numpy().flatten()
-        #plt.scatter(y_train.cpu().detach().numpy().flatten(), pred_y, s=11, color="blue", alpha=0.8)
+        model.eval()
+        train_pred = np.ndarray((0,))
+        train_measured = np.ndarray((0,))
+        for X_train, y_train in train_dataloader:
+            predict = model(X_train).reshape(-1)
+            pred_y = predict.cpu().detach().numpy().flatten()
+            train_measured = np.hstack((train_measured, y_train.cpu().detach().numpy().flatten()))
+            train_pred = np.hstack((train_pred, pred_y))
+            
+        total_mse = 0
+        count = 0
+        true_all = np.ndarray((0,))
+        pred_all = np.ndarray((0,))
+        for X_test, y_test in test_dataloader:
+            predict = model(X_test).reshape(-1)
+            pred_y = predict.cpu().detach().numpy().flatten()
+            pred_all = np.hstack((pred_all, pred_y))
+            true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
+            total_mse += mse_sum(predict, y_test).item()
+            count += predict.size(0)
+        test_loss = math.sqrt(total_mse / count)
+        r2 = r2_score(pred_all, true_all)
         
-    total_mse = 0
-    count = 0
-    true_all = np.ndarray((0,))
-    pred_all = np.ndarray((0,))
-    for X_test, y_test in test_dataloader:
-        predict = model(X_test).reshape(-1)
-        pred_y = predict.cpu().detach().numpy().flatten()
-        pred_all = np.hstack((pred_all, pred_y))
-        true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
-        total_mse += mse_sum(predict, y_test).item()
-        count += predict.size(0)
-    test_loss = math.sqrt(total_mse / count)
-    r2 = r2_score(pred_all, true_all)
-    
-    history["Test loss"].append(loss)
-    
-    if epoch %10 ==0:
-        plt.plot([Y.min(),Y.max()], [Y.min(),Y.max()], lw=1, color="black")
-        plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
-        plt.xlabel("Measured", "Predicted")
-        plt.title(f"Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
-        plt.show()
+        if epoch > 0:
+            if test_loss < min(history["Test loss"]):
+                torch.save(model.state_dict(), checkpoint)
+                plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
+                plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8)
+                plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
+                plt.xlabel("Measured")
+                plt.ylabel("Predicted")
+                plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+                plt.show()
+            
+        history["Test loss"].append(test_loss)
+    return model, history
+
+target = "7Z0X"
+train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
+
+
+models = {}
+models[target], _ = train_transformer_model(checkpoint=f"best_{target}.pt")
+
+
+
