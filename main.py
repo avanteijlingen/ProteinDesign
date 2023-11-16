@@ -335,7 +335,6 @@ if __name__ == "__main__":
     # First determine which residues are part of the interface
     # We want to get them from both complexes and stack them together since they mostly but not entirely overlap
     if "interface_resid" not in Data:
-        assert 1==0, "This has not been accounted for in the API"
         spike_resids = np.ndarray((0,), dtype=np.int64)
         for Complex, idx in zip([Complex_7Z0X, Complex_6M0J], ["7Z0X", "6M0J"]):
             Complex.Minimize()
@@ -348,7 +347,9 @@ if __name__ == "__main__":
         Complex_7Z0X.spike_interface_resids = " ".join(spike_resids.astype(np.str_))
         Complex_6M0J.spike_interface_resids = " ".join(spike_resids.astype(np.str_))
         Data["interface_resid"] = [int(x) for x in spike_resids]
+        Data = load_data_from_api()
         with open("Data.json", 'w') as jout: jout.write(json.dumps(Data, indent=4))#, separators=(',', ':')))
+        Data = load_data_from_api()
     else:
         Complex_7Z0X.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
         Complex_6M0J.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
