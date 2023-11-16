@@ -239,14 +239,6 @@ src_len = 70
 batch_size = 100 #1024
 
 
-with open("Data.json") as jin:
-    Data = json.load(jin)
-
-src_vocab = {'Empty':0, 'A': 1, 'C': 2,'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 
-                'K': 9, 'L': 10, 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15, 'S': 16, 
-                'T': 17, 'V': 18, 'W': 19, 'Y': 20}
-
-
 def make_data(features, src_len):
     enc_inputs = []
     for i in range(len(features)):
@@ -276,7 +268,7 @@ def encode_data(Data: dict, target: str):
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     return train_dataloader, test_dataloader, Y.min(), Y.max()
 
-def train_transformer_model(checkpoint = "best.pt"):
+def train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint = "best.pt"):
     mse_sum = torch.nn.MSELoss(reduction='sum')
     model = Transformer(Min=Min_val, Max=Max_val)
     model.to(device)
@@ -340,23 +332,31 @@ def train_transformer_model(checkpoint = "best.pt"):
         if epoch > 0:
             if test_loss < min(history["Test loss"]):
                 torch.save(model.state_dict(), checkpoint)
-                plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
-                plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8)
-                plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
-                plt.xlabel("Measured")
-                plt.ylabel("Predicted")
-                plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
-                plt.show()
-            
+# =============================================================================
+#                 plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
+#                 plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8)
+#                 plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
+#                 plt.xlabel("Measured")
+#                 plt.ylabel("Predicted")
+#                 plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+#                 plt.show()
+#             
+# =============================================================================
         history["Test loss"].append(test_loss)
     return model, history
 
-target = "7Z0X"
-train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
-
-
-models = {}
-models[target], _ = train_transformer_model(checkpoint=f"best_{target}.pt")
+if __name__ == "__main__":
+    with open("Data.json") as jin:
+        Data = json.load(jin)
+    
+    src_vocab = {'Empty':0, 'A': 1, 'C': 2,'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 
+                    'K': 9, 'L': 10, 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15, 'S': 16, 
+                    'T': 17, 'V': 18, 'W': 19, 'Y': 20}
+    target = "7Z0X"
+    train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
+    
+    models = {}
+    models[target], _ = train_transformer_model(Min_val, Max_val, checkpoint=f"best_{target}.pt")
 
 
 
