@@ -32,3 +32,22 @@ post_entry_to_api(Data, idx, Complex.interface_seq, entry) # Write the results t
 surface_contact = contactarea(radii_csv = "Alvarez2013_vdwradii.csv")
 ContactSurfaceArea = surface_contact.calculate(Spike_ase, Receptor_ase)
 ```
+
+2. Transformer - A neural network transformer that converts the interface sequences to integer representations and attempts to learn the long range relationships between amino acids on the spike protein interface which contribute towards and against binding with the antibody and the ACE2 receptor. A train-test split is used to provide early stopping based on a test which helps to avoid overfitting.
+
+```python
+device = torch.device("cuda")
+with open("Data.json") as jin:
+    Data = json.load(jin)
+
+for target in ["7Z0X", "6M0J"]:
+    train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target, device)
+
+    models = {}
+    models[target], _ = train_transformer_model(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{target}.pt")
+```
+
+![](images/Transformer_6M0J.png)
+![](images/Transformer_7Z0X.png)
+
+Largely addapted from: [https://doi.org/10.1002/advs.202301544](https://doi.org/10.1002/advs.202301544)
