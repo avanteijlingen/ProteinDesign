@@ -101,18 +101,6 @@ if __name__ == "__main__":
             candidates.append(Complex_6M0J.interface_seq)       
         X_test = make_data(candidates, src_len).squeeze().to(device)
         
-        # Old classical ML parameters
-# =============================================================================
-#         # Use the ML algorithm to predict the binding energies of a list of random mutated candidates 
-#         print("Generating parameters for candidate sequences")
-#         X = make_pybiomed_data(candidates)
-#         X = X[X_train.columns]
-#         print(X.shape)
-#         candidates_pred = pandas.DataFrame(index=candidates)
-#         for idx in ["7Z0X", "6M0J"]:
-#             candidates_pred[idx] = models[idx].predict(X)
-# =============================================================================
-
 
         # Make prediction of binding energy with transformer
         print("Predicting binding energies for candidate sequences")
