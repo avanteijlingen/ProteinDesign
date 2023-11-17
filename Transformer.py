@@ -16,7 +16,7 @@ import torch.nn as nn
 import tqdm, math
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from torch.autograd import Variable
+
 
 
 class PositionalEncoding(nn.Module):

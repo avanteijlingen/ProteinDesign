@@ -6,73 +6,13 @@ Created on Wed Nov 15 01:08:32 2023
 @author: rkb19187
 """
 import torch
-from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
-
 import tqdm, pandas
-from sklearn.feature_selection import RFECV, RFE, SelectFromModel
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.svm import SVR
-
-from PyBioMed import Pyprotein
-from PyBioMed.PyProtein import AAComposition, CTD
-from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import VarianceThreshold
-
 from main import *
 from Transformer import *
 
 pandas.set_option('display.max_columns', 5)
    
-def make_pybiomed_data(sequences: list) -> np.ndarray:
-    if os.path.exists("PyBioMed.csv"):
-        PyBioMed_data = pandas.read_csv("PyBioMed.csv", index_col=0)
-    else:
-        PyBioMed_data = pandas.DataFrame()
-    X = None 
-    for seq in tqdm.tqdm(sequences):
-        if seq == "XRD":
-            continue
-        if seq in PyBioMed_data.index:
-            if X is None:
-                X = np.ndarray((0, PyBioMed_data.shape[1]))
-            X = np.vstack((X, PyBioMed_data.loc[seq]))
-            continue
-        peptide_data = {}
-        peptide_class = Pyprotein.PyProtein(seq)
-        
-        # AA, dipeptide, tripeptide compotiion: "GetAAComp", "GetDPComp", "GetTPComp"
-        for function in ["GetAPAAC", "GetCTD", "GetGearyAuto", "GetMoranAuto", "GetMoreauBrotoAuto", "GetPAAC", "GetQSO", "GetSOCN"]: #dir(peptide_class):
-            _data = getattr(peptide_class, function)()
-            peptide_data.update(_data)
-            #print(function, list(_data.keys())[:10])
-        if PyBioMed_data.shape[0] == 0:
-            PyBioMed_data = pandas.DataFrame(columns=list(peptide_data.keys()))
-        PyBioMed_data.loc[seq] = np.array(list(peptide_data.values()))
-        if X is None:
-            X = np.ndarray((0, PyBioMed_data.shape[1]))
-        X = np.vstack((X, np.array(list(peptide_data.values()), dtype=np.float64)))
-    # Cache them so we arent regenerating on each cycle
-    PyBioMed_data.to_csv("PyBioMed.csv")
-    print("PyBioMed_data.shape:", PyBioMed_data.shape)
-    cols = PyBioMed_data.columns
-    X = pandas.DataFrame(X, columns=cols)
-    return X
-
-
-
-def extract_y_data(Data: dict) -> pandas.DataFrame:
-    Y = pandas.DataFrame()
-    for i, seq in enumerate(training_data_labels):
-        for code in ["7Z0X", "6M0J"]:
-            if seq in Data[code]:
-                Y.at[seq, code] = Data[code][seq]["BindingEnergy"]
-                Y.at[seq, "i"] = i
-    Y["i"] = Y["i"].astype(np.int64)
-    Y = Y.dropna()
-    Y = Y.reindex([x for x in Y.index if len(x) == 70])
-    return Y
 
 if __name__ == "__main__":
     #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

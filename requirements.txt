@@ -5,7 +5,6 @@ scikit-learn
 matplotlib
 torch>=2.1.1
 pandas
-requests
 ase
 pandas
 python-dotenv
