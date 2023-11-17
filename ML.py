@@ -6,8 +6,6 @@ Created on Wed Nov 15 01:08:32 2023
 @author: rkb19187
 """
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 
@@ -61,47 +59,6 @@ def make_pybiomed_data(sequences: list) -> np.ndarray:
     cols = PyBioMed_data.columns
     X = pandas.DataFrame(X, columns=cols)
     return X
-
-def reduce_n_features(X_train, y_train):
-    feature_reducer = SelectFromModel(Ridge(), max_features=40)
-    feature_reducer = feature_reducer.fit(X_train, y_train)
-    try:
-        support = feature_reducer.support_
-    except AttributeError:
-        support = feature_reducer.get_support()
-    return support
-
-def split_and_reduce_dataset(X_, Y_):
-    X_train, X_test, y_train, y_test = train_test_split(X_.astype(np.float32), Y_, test_size=0.2, shuffle=True, random_state=95)
-    #feature_reducer = RFE(Ridge(), n_features_to_select=50, step=10, n_jobs=10)
-    #feature_reducer = RFECV(Ridge(), min_features_to_select=40, step=10, cv=3, scoring="neg_mean_squared_error", n_jobs=10)
-    support = reduce_n_features(X_train, y_train)
-    X_train = X_train[X_train.columns[support]]
-    X_test = X_test[X_test.columns[support]]
-    return X_train, X_test, y_train, y_test
-    
-    
-def gen_model(X_data: np.ndarray, Y_data: np.ndarray):
-    X_train, X_test, y_train, y_test = split_and_reduce_dataset(X_data, Y_data)
-    print("Remaining parameters:", support.sum())
-    SVRrbf_param_grid = {
-            "kernel": ["rbf", "poly"],
-            #"kernel": ["rbf"],
-            "degree": [0,1,2,3,4,5],
-            "gamma": ["scale", "auto"],
-            "C": np.hstack((np.arange(0.1,1.1, 0.1), np.arange(1, 20, 1))), 
-            "epsilon": np.linspace(0.01, 5, 20), 
-            "max_iter": [-1],
-            "tol": [1.0, 0.1, 0.01, 0.001, 0.0001], 
-            "verbose":[0]}
-    model = SVR()
-    HPO_model = RandomizedSearchCV(estimator = model, param_distributions = SVRrbf_param_grid, 
-                                   cv = 3, verbose = True, n_iter=300, random_state=947, n_jobs=10)
-    HPO_model.fit(X_train, y_train)
-    print("\nBest params from grid search:")
-    print(HPO_model.best_params_)
-    SVMrbf_hyperparameters = HPO_model.best_params_
-    return SVR(**SVMrbf_hyperparameters), X_train, X_test, y_train, y_test
 
 
 
