@@ -25,7 +25,7 @@ class PositionalEncoding(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
         pe = torch.zeros(max_len, d_model)  # [max_len, d_model]
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)  # [max_len,1], pos向量
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)  # [max_len,1], pos
         # div_term [d_model/2]
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))  # 10000^{2i/d_model}
         pe[:, 0::2] = torch.sin(position * div_term)  
@@ -242,7 +242,21 @@ src_vocab = {'Empty':0, 'A': 1, 'C': 2,'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, '
                 'K': 9, 'L': 10, 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15, 'S': 16, 
                 'T': 17, 'V': 18, 'W': 19, 'Y': 20}
 
-def make_data(features, src_len):
+def make_data(features: list, src_len: int) -> torch.LongTensor:
+    """
+    Parameters
+    ----------
+    features : list
+        The spike interface sequence as a list of characters.
+    src_len : int
+        The max length we expect the interface sequence to be (70).
+
+    Returns
+    -------
+    torch.LongTensor
+        Position encoded sequence.
+
+    """
     enc_inputs = []
     for i in range(len(features)):
         enc_input = [[src_vocab[n] for n in list(features[i])]]
