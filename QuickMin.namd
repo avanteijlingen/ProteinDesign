@@ -1,0 +1,79 @@
+structure          INPUT.psf
+coordinates        INPUT.pdb
+
+set startat 0
+set outputname Minimization
+set temperature 298
+
+firsttimestep $startat
+
+if { $startat > 0 } {
+    bincoordinates $outputname.restart.coor
+    binvelocities $outputname.restart.vel
+} else {
+    temperature $temperature
+}
+
+# Input
+paraTypeCharmm      on
+parameters PARAM_DIR/par_all36_prot.prm
+parameters PARAM_DIR/par_all36_carb.prm
+parameters PARAM_DIR/par_all36_lipid.prm
+parameters PARAM_DIR/par_all36_na.prm
+parameters PARAM_DIR/par_all36_cgenff.prm
+parameters PARAM_DIR/toppar_water_ions_namd.str 
+
+
+# Output file details
+restartfreq         200
+dcdfreq             200
+outputEnergies      10000
+outputPressure      10000
+
+
+# Forcefield parameters
+margin              2
+exclude             scaled1-4
+1-4scaling          1.0
+cutoff              12.0
+switching           on
+switchdist          10.0
+pairlistdist        14.0
+
+
+# Integrator parameters
+timestep            1.0  ;# 2fs/step
+rigidBonds          none  ;# needed for 2fs steps
+nonbondedFreq       1
+fullElectFrequency  2  
+stepspercycle       10
+
+# Constant temperature control
+langevin            on    ;# do langevin dynamics
+langevinTemp $temperature
+langevinDamping     1     ;# damping coefficient (gamma) of 1/ps
+langevinHydrogen    off    ;# don't couple langevin bath to hydrogens
+
+# Constant pressure control (variable volume)
+# langevinPiston        on
+# langevinPistonTarget  1.01325 ;#  in bar -> 1 atm
+# langevinPistonTemp $temperature
+# langevinPistonPeriod  100.0
+# langevinPistonDecay   50.0
+useGroupPressure      yes ;# needed for rigidBonds
+
+# Volume controls
+useFlexibleCell       no
+useConstantArea       no
+
+# Output
+outputName          $outputname
+
+GBIS                 on
+solventDielectric    78.5
+SASA                 off
+
+
+# Minimisation
+minimize            1000
+
