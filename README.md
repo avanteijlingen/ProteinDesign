@@ -1,9 +1,9 @@
 # Protein Design
 
-#### Setup, in order to utilize this program you will have to create a .env file in the root folder (see .env.example
+*Setup, in order to utilize this program you will have to create a .env file in the root folder (see .env.example*
 
 
-###The source code is broken down into 3 major components:
+### The source code is broken down into 3 major components:
 1.  measure_interface (main.py) - a tool for retreiving PDB's from RCSB, generating their topologies (with psfgen), identifying interfaces, making measurements etc. This is the MD and MD analytical class.
 
 Example functionality:
@@ -25,5 +25,10 @@ Complex.MeasureInterface() # Measure binding energy, hydrogen bonding and contac
 entry = {"Source": "Inital"}
 entry.update(Complex.score)
 post_entry_to_api(Data, idx, Complex.interface_seq, entry) # Write the results to the main database
+```
 
+1.1 contactarea - A tool for measuring interface contact area, using a type of invererted SASA measurement on the Spike interface ase model and Receptor interface ase model.
+```python
+surface_contact = contactarea(radii_csv = "Alvarez2013_vdwradii.csv")
+ContactSurfaceArea = surface_contact.calculate(Spike_ase, Receptor_ase)
 ```
