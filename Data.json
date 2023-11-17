@@ -911,6 +911,264 @@
             "hbonds": 2,
             "BindingEnergy": 21.895239258992067,
             "contact surface area": 7.853981633974482
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTVIYQAGSTPCNGVEGFNCYFLLQYYGFQATNGVGYAPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 6.642756726812827,
+            "contact surface area": 5.759586531581287
+        },
+        "VSIRGDEQGKIDYNANSKVGGNYYWYWLFRKTEYYQAGSTPCNGVEGYPCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 15.152967456559022,
+            "contact surface area": 6.8067840827778845
+        },
+        "CSIRYDEQGKIDLNNNSKVGGNYTLYRLFRKTEIYQAGLTPCNGVEGFNCYFDLQSYGFQPTNYVGKQVY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 15.603674234839273,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIRGDEQGKIDYNSNDKVNGNYYLYRLFRKTEVYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -2.215093827454443,
+            "contact surface area": 12.042771838760872
+        },
+        "HSIRYDFQGKIDYNNNSKVGGNYYLYRLFRYTEIYQAGTTPMNGVERFNCYFPLQSYGFQKTNQVGYWPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -13.89303957829841,
+            "contact surface area": 18.325957145940457
+        },
+        "VSIRGDEAGKIDSNNNSKVGGLYYLYRLFRKLEIYQAGSTPCNGYEGFNCYFPLQSYGFWPTNGVSYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -21.662530643148976,
+            "contact surface area": 12.566370614359172
+        },
+        "RSGRGDEQGKIWYNNNSNNGGNYYLYRLFRKTEIYQAGSTKCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 38.07614186999898,
+            "contact surface area": 10.471975511965976
+        },
+        "WSRRGDEQGKIDTNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFAPTNGVGVQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -6.763197336521279,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIIGDEQGKIDYNNNQKVGGNYYLYRLFRKTEWYRAGSTPCNGVEGFNCYFPLQSNGFQPTNYVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 16.303259523612144,
+            "contact surface area": 14.137166941154067
+        },
+        "VSIRYDEQGKIDYNNNSKVMGNYYLYRLFAKTEIYQAGSTMCNGVEGFNCYFPLQSSGFQETNGVGYHNY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 25.432796357248865,
+            "contact surface area": 7.330382858376184
+        },
+        "VSIRGDEQGKIDYNNVTKVGGNYTLYRLFRKTEIYQAGLTCCNGVRGFNCYFPLQSYGFQPTNGVFFQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -22.992471963030148,
+            "contact surface area": 15.707963267948964
+        },
+        "ISIRGQEQGKIDYNNNRKVGGNCYLYRLFRKTEIYPAGSTPCNGVEGFNCYFPLQSLGFQPTNYVRYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 25.98549193702289,
+            "contact surface area": 6.8067840827778845
+        },
+        "VSIRGDEQGKIDYNNNMKRGGQYELYRLFRVTEIYQAFSTPCNGVEGFNCYFPLWSFGFCPTNGMGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -21.71289463623909,
+            "contact surface area": 8.377580409572781
+        },
+        "VDIRGDENGKIDRNNNSDVGGNYYEYRLFRKTERYQKGSTPCGGVEGFNCYFPCQSYGFQNTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 40.74918691799594,
+            "contact surface area": 10.995574287564276
+        },
+        "VSERGDEQGKIDYNNNSKAGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCAFPLQSYGFQRTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -26.09540971618963,
+            "contact surface area": 7.330382858376184
+        },
+        "VSIRGQETGKIDYNNNSKVGSNYYLYRLFRFTEEYQAGSTPCNGVEGFNCYFPLQCYGFHPTNGFGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -30.91776399824871,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGEEQTKIDYNNNSMVGGNYYLYRLFRKTEIYDAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGKQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 1,
+            "BindingEnergy": 1.235831840920169,
+            "contact surface area": 5.235987755982988
+        },
+        "VSIRGDEQGKVRYNNNSKQGGNYYLYLLFRKTEIYQAGSTPCNGVELFSCYFPLQSYGFQPTNGVGYQPS": {
+            "Source": "ML-DNN",
+            "hbonds": 1,
+            "BindingEnergy": -2.5969350741197355,
+            "contact surface area": 4.71238898038469
+        },
+        "VSIRGDEQGAIDYNDNSKVWGNYYLYRLFRKTEIYQAGSTPENGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -23.575216086722165,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIRGTEQGKIDYNNNSKVGGNYYLYRLFRKTEGYQAGSTPCNGVEGFNCYFPSQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 13.723925263747923,
+            "contact surface area": 8.90117918517108
+        },
+        "VSIRGDEQGKIRYNNNSKCGGNYYLYRLFRKTEKYEAGSTPCNGVEVFNCYFVLQSYGFQPTNGVGFQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 28.238259636939482,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIVQDGSTPCNGVEGFNCYFPLQSYCFQPTNGVGYQKY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -2.2269697659356518,
+            "contact surface area": 12.042771838760872
+        },
+        "LSIRGDEQNKIDYNNNSKVGGNYYLYRLFEKTEIYQAGSTPCNGHEGNNCYFPLQSYGFQNTNGPGRCPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -23.740147804058438,
+            "contact surface area": 17.27875959474386
+        },
+        "VSIRGNWQGKIDYNNNSKVGGNDYLYRNFRKTEIYQAGATPCNGVEGFNCYFPLQYYGSAPTNCVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -0.5843584902616451,
+            "contact surface area": 16.231562043547264
+        },
+        "VSIRQDEQGKIDYNQNSKVGGNYYLYRLFRKTEIYQAKSTPCNGVEGFNVYFPLQMYGFQPTNMVGYGPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -4.19754535509483,
+            "contact surface area": 6.283185307179586
+        },
+        "VSIRGDEQGKIDYNMNSKVGGNYYLYRLFRKTEIYQAGRTPCNGVEGFNCYFPLQSYGFQPTNGVGKQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -10.618155642720824,
+            "contact surface area": 11.519173063162574
+        },
+        "VSIRGDEQGKIDHNNNSKKGGNYPLYRLFRKTPIYQAYSTPCNGVEGFNFYFPLQAYCFQPTNGVGEQHY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 5.037277557456889,
+            "contact surface area": 5.235987755982988
+        },
+        "ESIRGDEQKKIDYNNNSKVRGNSYLYRLFRKKEIYQAGSTECNGVEGFNCYFPLQSYGFWPTNGVGYIPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -2.031491353232786,
+            "contact surface area": 13.08996938995747
+        },
+        "VSIRGTEQGKIDYNKVSKVGGNYYLYRRFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGEQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 24.810944214548915,
+            "contact surface area": 7.853981633974482
+        },
+        "VHIRGDIQGKIDMQNNSKVGGNYYLYRLFRKTEILQLGSTPCNGVEGFLCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -17.71221228189983,
+            "contact surface area": 5.759586531581287
+        },
+        "VSIRGDEQGKIDYNRNSKVGGNMYLYRLFRKTGIYQAGSTPCNGVEGFNCYFPLQTYVFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 1,
+            "BindingEnergy": 16.461968498297573,
+            "contact surface area": 3.141592653589793
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTENYQAGSCPCNGVEGFNCYFPLQLYGFQPTNGWGEQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -23.111006707730283,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTERYQAGSTPCNGVEGFNCYFSLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 13.692071545008034,
+            "contact surface area": 13.08996938995747
+        },
+        "VSIRGFEQGKNDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPR": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -14.143016075192229,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGDEQGKIDYNRNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFLLQWPCFQPTNMVGLQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 0.5305570223708171,
+            "contact surface area": 8.90117918517108
+        },
+        "VSIRGDEQGKADYNNNSKPGGNYYLYRLFRKTEIYQAGSTPCNGVEGINCYQWTQSYGFQPTNGIGCQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -13.066349356495868,
+            "contact surface area": 10.995574287564276
+        },
+        "VSIRGAEQGKVDYNVNSKVGGNYYLYRMFRKTEIYQAESTPHNGVEGLNCYEPLQSYGFQQTNGVGVQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -1.54092103322763,
+            "contact surface area": 6.8067840827778845
+        },
+        "VSIRGDEQGKIDYNENSVVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFWPTNGVGLQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 15.26674679806896,
+            "contact surface area": 15.707963267948964
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQGYGEAPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 7.931665950065781,
+            "contact surface area": 4.1887902047863905
+        },
+        "VSIRGDEQGKGDYNNNSKVGGNWYLYREFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFGPTNRVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": -29.202606256705987,
+            "contact surface area": 7.853981633974482
+        },
+        "VSIRGDEQGKIDYNNNGKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFHCYPPLQSYGFQKTNKVGYQPP": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": 10.820054516595556,
+            "contact surface area": 14.660765716752367
+        },
+        "QSIRGDEQGCIDYNNNSKVGGNYYLYRLTRKTERRKAGSTPCNGVEGFMCYFPLQSYGFQPTNGVGYQPR": {
+            "Source": "ML-DNN",
+            "hbonds": 2,
+            "BindingEnergy": 13.169841256882995,
+            "contact surface area": 12.042771838760872
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYLYRLFRKTEIYQAGSTPCNGMEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 3,
+            "BindingEnergy": -13.034637977479864,
+            "contact surface area": 8.377580409572781
         }
     },
     "6M0J": {
@@ -1807,6 +2065,240 @@
             "hbonds": 6,
             "BindingEnergy": -41.700257295333714,
             "contact surface area": 29.845130209103033
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTVIYQAGSTPCNGVEGFNCYFLLQYYGFQATNGVGYAPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -114.07107695419968,
+            "contact surface area": 34.033920413889426
+        },
+        "VSIRGDEQGKIDYNANSKVGGNYYWYWLFRKTEYYQAGSTPCNGVEGYPCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 9,
+            "BindingEnergy": -56.16472088177302,
+            "contact surface area": 36.651914291880914
+        },
+        "CSIRYDEQGKIDLNNNSKVGGNYTLYRLFRKTEIYQAGLTPCNGVEGFNCYFDLQSYGFQPTNYVGKQVY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -172.25486944962148,
+            "contact surface area": 31.415926535897928
+        },
+        "VSIRGDEQGKIDYNSNDKVNGNYYLYRLFRKTEVYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -102.08165267024755,
+            "contact surface area": 48.17108735504349
+        },
+        "HSIRYDFQGKIDYNNNSKVGGNYYLYRLFRYTEIYQAGTTPMNGVERFNCYFPLQSYGFQKTNQVGYWPY": {
+            "Source": "ML-DNN",
+            "hbonds": 6,
+            "BindingEnergy": -141.97601123531499,
+            "contact surface area": 31.415926535897928
+        },
+        "VSIRGDEAGKIDSNNNSKVGGLYYLYRLFRKLEIYQAGSTPCNGYEGFNCYFPLQSYGFWPTNGVSYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 6,
+            "BindingEnergy": -83.7496635760037,
+            "contact surface area": 25.132741228718345
+        },
+        "RSGRGDEQGKIWYNNNSNNGGNYYLYRLFRKTEIYQAGSTKCNGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -74.71735205452856,
+            "contact surface area": 41.36430327226561
+        },
+        "WSRRGDEQGKIDTNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFAPTNGVGVQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -70.19184732569002,
+            "contact surface area": 31.93952531149623
+        },
+        "VSIIGDEQGKIDYNNNQKVGGNYYLYRLFRKTEWYRAGSTPCNGVEGFNCYFPLQSNGFQPTNYVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -102.10939047291357,
+            "contact surface area": 33.510321638291124
+        },
+        "VSIRYDEQGKIDYNNNSKVMGNYYLYRLFAKTEIYQAGSTMCNGVEGFNCYFPLQSSGFQETNGVGYHNY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -39.69591405776148,
+            "contact surface area": 48.69468613064179
+        },
+        "VSIRGDEQGKIDYNNVTKVGGNYTLYRLFRKTEIYQAGLTCCNGVRGFNCYFPLQSYGFQPTNGVFFQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -69.72694999105342,
+            "contact surface area": 31.415926535897928
+        },
+        "ISIRGQEQGKIDYNNNRKVGGNCYLYRLFRKTEIYPAGSTPCNGVEGFNCYFPLQSLGFQPTNYVRYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -148.06362184641864,
+            "contact surface area": 54.454272662223076
+        },
+        "VSIRGDEQGKIDYNNNMKRGGQYELYRLFRVTEIYQAFSTPCNGVEGFNCYFPLWSFGFCPTNGMGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 5,
+            "BindingEnergy": -69.97479662177179,
+            "contact surface area": 24.085543677521745
+        },
+        "VDIRGDENGKIDRNNNSDVGGNYYEYRLFRKTERYQKGSTPCGGVEGFNCYFPCQSYGFQNTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -65.22595015443855,
+            "contact surface area": 39.79350694547071
+        },
+        "VSERGDEQGKIDYNNNSKAGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCAFPLQSYGFQRTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -103.83432338828237,
+            "contact surface area": 32.46312408709453
+        },
+        "VSIRGQETGKIDYNNNSKVGSNYYLYRLFRFTEEYQAGSTPCNGVEGFNCYFPLQCYGFHPTNGFGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -95.41624354553451,
+            "contact surface area": 48.17108735504349
+        },
+        "VSIRGEEQTKIDYNNNSMVGGNYYLYRLFRKTEIYDAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGKQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -145.18480904923868,
+            "contact surface area": 40.31710572106901
+        },
+        "VSIRGDEQGKVRYNNNSKQGGNYYLYLLFRKTEIYQAGSTPCNGVELFSCYFPLQSYGFQPTNGVGYQPS": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -75.0128786268632,
+            "contact surface area": 36.12831551628262
+        },
+        "VSIRGDEQGAIDYNDNSKVWGNYYLYRLFRKTEIYQAGSTPENGVEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -16.165290219873423,
+            "contact surface area": 29.845130209103033
+        },
+        "VSIRGTEQGKIDYNNNSKVGGNYYLYRLFRKTEGYQAGSTPCNGVEGFNCYFPSQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -69.60029627118996,
+            "contact surface area": 34.033920413889426
+        },
+        "VSIRGDEQGKIRYNNNSKCGGNYYLYRLFRKTEKYEAGSTPCNGVEVFNCYFVLQSYGFQPTNGVGFQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -69.51984549950913,
+            "contact surface area": 26.17993877991494
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIVQDGSTPCNGVEGFNCYFPLQSYCFQPTNGVGYQKY": {
+            "Source": "ML-DNN",
+            "hbonds": 13,
+            "BindingEnergy": -152.71822789405732,
+            "contact surface area": 48.17108735504349
+        },
+        "LSIRGDEQNKIDYNNNSKVGGNYYLYRLFEKTEIYQAGSTPCNGHEGNNCYFPLQSYGFQNTNGPGRCPY": {
+            "Source": "ML-DNN",
+            "hbonds": 9,
+            "BindingEnergy": -161.65789586391037,
+            "contact surface area": 41.8879020478639
+        },
+        "VSIRQDEQGKIDYNQNSKVGGNYYLYRLFRKTEIYQAKSTPCNGVEGFNVYFPLQMYGFQPTNMVGYGPY": {
+            "Source": "ML-DNN",
+            "hbonds": 6,
+            "BindingEnergy": -106.75082038305797,
+            "contact surface area": 29.321531433504735
+        },
+        "VSIRGDEQGKIDYNMNSKVGGNYYLYRLFRKTEIYQAGRTPCNGVEGFNCYFPLQSYGFQPTNGVGKQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 9,
+            "BindingEnergy": -220.32362342602198,
+            "contact surface area": 42.9350995990605
+        },
+        "VSIRGDEQGKIDHNNNSKKGGNYPLYRLFRKTPIYQAYSTPCNGVEGFNFYFPLQAYCFQPTNGVGEQHY": {
+            "Source": "ML-DNN",
+            "hbonds": 5,
+            "BindingEnergy": -64.56547778683007,
+            "contact surface area": 19.373154697137057
+        },
+        "ESIRGDEQKKIDYNNNSKVRGNSYLYRLFRKKEIYQAGSTECNGVEGFNCYFPLQSYGFWPTNGVGYIPY": {
+            "Source": "ML-DNN",
+            "hbonds": 6,
+            "BindingEnergy": -54.72418747043151,
+            "contact surface area": 25.656340004316643
+        },
+        "VSIRGTEQGKIDYNKVSKVGGNYYLYRRFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGEQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -177.12550303038313,
+            "contact surface area": 52.35987755982988
+        },
+        "VSIRGDEQGKIDYNRNSKVGGNMYLYRLFRKTGIYQAGSTPCNGVEGFNCYFPLQTYVFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -89.31337762217315,
+            "contact surface area": 31.415926535897928
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTENYQAGSCPCNGVEGFNCYFPLQLYGFQPTNGWGEQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -70.21689888621424,
+            "contact surface area": 35.08111796508602
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTERYQAGSTPCNGVEGFNCYFSLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 9,
+            "BindingEnergy": -135.81202906954692,
+            "contact surface area": 41.8879020478639
+        },
+        "VSIRGFEQGKNDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPR": {
+            "Source": "ML-DNN",
+            "hbonds": 11,
+            "BindingEnergy": -137.90282766206488,
+            "contact surface area": 51.83627878423158
+        },
+        "VSIRGDEQGKIDYNRNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFLLQWPCFQPTNMVGLQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -88.00792402891409,
+            "contact surface area": 45.553093477051995
+        },
+        "VSIRGAEQGKVDYNVNSKVGGNYYLYRMFRKTEIYQAESTPHNGVEGLNCYEPLQSYGFQQTNGVGVQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 7,
+            "BindingEnergy": -46.205517970372014,
+            "contact surface area": 30.89232776029963
+        },
+        "VSIRGDEQGKIDYNENSVVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFWPTNGVGLQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -80.35119641552754,
+            "contact surface area": 32.46312408709453
+        },
+        "VSIRGDEQGKIDYNNNSKVGGNYYLYRLFRKTEIYQAGSTPCNGVEGFNCYFPLQGYGEAPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 8,
+            "BindingEnergy": -78.87691134550128,
+            "contact surface area": 34.033920413889426
+        },
+        "VSIRGDEQGKGDYNNNSKVGGNWYLYREFRKTEIYQAGSTPCNGVEGFNCYFPLQSYGFGPTNRVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 5,
+            "BindingEnergy": -112.43546235516898,
+            "contact surface area": 23.561944901923447
+        },
+        "QSIRGDEQGCIDYNNNSKVGGNYYLYRLTRKTERRKAGSTPCNGVEGFMCYFPLQSYGFQPTNGVGYQPR": {
+            "Source": "ML-DNN",
+            "hbonds": 4,
+            "BindingEnergy": -4.716343838383257,
+            "contact surface area": 20.420352248333653
+        },
+        "VSIRGDEQGKIDYNNNSKCGGNYYLYRLFRKTEIYQAGSTPCNGMEGFNCYFPLQSYGFQPTNGVGYQPY": {
+            "Source": "ML-DNN",
+            "hbonds": 10,
+            "BindingEnergy": -109.52780841037617,
+            "contact surface area": 43.982297150257104
         }
     },
     "interface_resid": [
