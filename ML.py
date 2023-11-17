@@ -125,20 +125,24 @@ if __name__ == "__main__":
     
     # Load the RCSB minimized structures
     Complex_7Z0X = measure_interface("7Z0X", torch.device("cpu")) # struggling to hold all these models in GPU memory so we'll use CUDA in some place and not in other
-    Complex_6M0J = measure_interface("6M0J", torch.device("cuda"))
+    Complex_6M0J = measure_interface("6M0J", torch.device("cpu"))
     for Complex in [Complex_6M0J, Complex_7Z0X]:
         Complex.spike_interface_resids = " ".join([str(x) for x in Data["interface_resid"]])
     
     # Check for missing pairs we can fill in
     missing = []
     for seq in Data["7Z0X"]:
-        if len(seq) != 70:
+        if "ML" not in Data["7Z0X"][seq]["Source"] or len(seq) != 70:
             continue
         if seq not in Data["6M0J"]:
             missing.append(seq)
+
     if len(missing) > 0:
         print(f"Found {len(missing)} sequences in 6M0J that we have for 7Z0X")
         for seq in missing:
+            if os.path.exists(f"MD/6M0J_{seq}/Minimization.restart.coor"):
+                print(seq, "already tried (and failed)")
+                continue
             print("Filling in for:", seq)
             Complex_6M0J.active_folder = f"MD/{Complex_6M0J.idx}"
             Complex_6M0J.load_universe()    
@@ -149,7 +153,7 @@ if __name__ == "__main__":
             Complex_6M0J.MakeMutation()
             print(f"Running minimization with {namd}")
             Complex_6M0J.Minimize()
-            if not os.path.exists(f"{Complex.active_folder}/Minimization.coor"):
+            if not os.path.exists(f"{Complex_6M0J.active_folder}/Minimization.coor"):
                 print("Minimization failed, skipping")
                 continue
             Complex_6M0J.load_universe()
@@ -158,14 +162,12 @@ if __name__ == "__main__":
             print("Making measurements")
             Complex_6M0J.MeasureInterface()
             Data = load_data_from_api() # always reload before posting incase there is new data from another source
-            entry = {"Source": Data["7Z0X"][idx]["Source"]}
+            entry = {"Source": Data["7Z0X"][seq]["Source"]}
             entry.update(Complex_6M0J.score)
-            post_entry_to_api(Data, idx, Complex_6M0J.interface_seq, entry)
+            post_entry_to_api(Data, "6M0J", Complex_6M0J.interface_seq, entry)
             Data = load_data_from_api() # always reload after posting incase there is new data from another source
-  
-    
-        
-    sys.exit()
+
+
     # Active machine learning
     for active_learning_iteration in range(1000):
         # Reset the active folder to the wild type
