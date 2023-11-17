@@ -305,7 +305,7 @@ def train_transformer_model(device, train_dataloader, test_dataloader, Min_val, 
         #SGD.load_state_dict(checkpoint['SGD'])
         #SGD_scheduler.load_state_dict(checkpoint['SGD_scheduler'])
     history = {"Test loss": [], "Train loss": []}
-    for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+21)):
+    for epoch in tqdm.tqdm(range(SGD_scheduler.last_epoch, SGD_scheduler.last_epoch+210)):
         LossSum = None
         model.train()
         total_mse = 0
@@ -349,27 +349,78 @@ def train_transformer_model(device, train_dataloader, test_dataloader, Min_val, 
         if epoch > 0:
             if test_loss < min(history["Test loss"]):
                 torch.save(model.state_dict(), checkpoint_fname)
-# =============================================================================
-#                 plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
-#                 plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8)
-#                 plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8)
-#                 plt.xlabel("Measured")
-#                 plt.ylabel("Predicted")
-#                 plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
-#                 plt.show()
-# =============================================================================
+                plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
+                plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8, label="Training")
+                plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8, label="Testing")
+                plt.xlabel("Measured AIMNet2 Binding Energy (kcal/mol)")
+                plt.ylabel("Predicted AIMNet2 Binding Energy (kcal/mol)")
+                #plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+                plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, {target}")
+                plt.show()
         history["Test loss"].append(test_loss)
     return model, history
 
+def transformer_plot(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname = "best.pt"):
+    mse_sum = torch.nn.MSELoss(reduction='sum')
+    model = Transformer(Min=Min_val, Max=Max_val)
+    model.to(device)
+
+    print("Loading from:", checkpoint_fname)
+    if device.type == "cpu":
+        checkpoint = torch.load(checkpoint_fname, map_location=torch.device('cpu'))
+    else:
+        checkpoint = torch.load(checkpoint_fname)
+    model.load_state_dict(checkpoint)
+    
+    model.eval()
+    train_pred = np.ndarray((0,))
+    train_measured = np.ndarray((0,))
+    for X_train, y_train in train_dataloader:
+        predict = model(X_train).reshape(-1)
+        pred_y = predict.cpu().detach().numpy().flatten()
+        train_measured = np.hstack((train_measured, y_train.cpu().detach().numpy().flatten()))
+        train_pred = np.hstack((train_pred, pred_y))
+        
+    total_mse = 0
+    count = 0
+    true_all = np.ndarray((0,))
+    pred_all = np.ndarray((0,))
+    for X_test, y_test in test_dataloader:
+        predict = model(X_test).reshape(-1)
+        pred_y = predict.cpu().detach().numpy().flatten()
+        pred_all = np.hstack((pred_all, pred_y))
+        true_all = np.hstack((true_all, y_test.cpu().detach().numpy().flatten()))
+        total_mse += mse_sum(predict, y_test).item()
+        count += predict.size(0)
+    test_loss = math.sqrt(total_mse / count)
+    r2 = r2_score(pred_all, true_all)
+    
+    plt.plot([Min_val, Max_val], [Min_val, Max_val], lw=1, color="black")
+    plt.scatter(train_measured, train_pred, s=11, color="blue", alpha=0.8, label="Training")
+    plt.scatter(true_all, pred_all, s=11, color="orange", alpha=0.8, label="Testing")
+    plt.xlabel("Measured AIMNet2 Binding Energy (kcal/mol)")
+    plt.ylabel("Predicted AIMNet2 Binding Energy (kcal/mol)")
+    #plt.title(f"Best Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}, EPOCH: {epoch}")
+    plt.title(f"{target} - Test RMSE: {round(test_loss, 2)}, r2: {round(r2, 1)}")
+    plt.legend()
+    fig = plt.gcf()
+    plt.show()
+    fig.savefig(f"Images/Transformer_{target}.png", dpi=600)
+    plt.show()
+
+
 if __name__ == "__main__":
+    device = torch.device("cuda")
     with open("Data.json") as jin:
         Data = json.load(jin)
     
-    target = "7Z0X"
-    train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target)
-    
-    models = {}
-    models[target], _ = train_transformer_model(train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{target}.pt")
+
+    for target in ["7Z0X", "6M0J"]:
+        train_dataloader, test_dataloader, Min_val, Max_val = encode_data(Data, target, device)
+        
+        models = {}
+        #models[target], _ = train_transformer_model(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{target}.pt")
+        transformer_plot(device, train_dataloader, test_dataloader, Min_val, Max_val, checkpoint_fname=f"best_{target}.pt")
 
 
 
