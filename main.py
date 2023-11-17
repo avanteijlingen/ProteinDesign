@@ -131,10 +131,10 @@ class measure_interface:
                 output_psf.write(line)
                 output_psf.write("\n")
 
-    def Minimize(self):
+    def Minimize(self, min_input = "Minimize.namd"):
         # Run a short minimization of the system
         if not os.path.exists(f"{self.active_folder}/Minimization.coor"):
-            shutil.copy("Minimize.namd", f"{self.active_folder}/Minimize.namd")
+            shutil.copy(min_input, f"{self.active_folder}/Minimize.namd")
             from_template(f"{self.active_folder}/Minimize.namd", ["INPUT", "PARAM_DIR"], [f"{self.idx}_psfgen", Path("parameters").absolute().as_posix()])
             #subprocess.check_output([namd, "+p4", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"])
             os.system(" ".join([namd, "+p10", f"{self.active_folder}/Minimize.namd", ">", f"{self.active_folder}/Minimize.log"]))
@@ -145,7 +145,9 @@ class measure_interface:
 
     def MeasureHBonds(self):
         self.hbonds = np.ndarray((0, 4), dtype=np.int64)
+        self.hbonds_detailed = pandas.DataFrame()
         hbonds_calc = HBA(universe=self.U)
+        i = 0
         for acceptor, donor in zip([self.receptor_chainID, self.spike_chainID], [self.spike_chainID, self.receptor_chainID]):
             hbonds_calc.hydrogens_sel = hbonds_calc.guess_hydrogens(f"protein")
             hbonds_calc.hydrogens_sel = f"protein and segid {donor} and (" + hbonds_calc.hydrogens_sel + ")"
@@ -154,7 +156,24 @@ class measure_interface:
             hbonds_calc.run()
             #Each row of the array contains the: donor atom id, hydrogen atom id, acceptor atom id and the total number of times the hydrogen bond was observed. The array is sorted by frequency of occurrence.
             counts = hbonds_calc.count_by_ids()
+            for row in counts:
+                self.hbonds_detailed.at[i, "donor id"] = row[0]
+                self.hbonds_detailed.at[i, "hydrogen id"] = row[1]
+                self.hbonds_detailed.at[i, "acceptor id"] = row[2]
+                if donor == self.spike_chainID:
+                    self.hbonds_detailed.at[i, "donor"] = "Spike"
+                    self.hbonds_detailed.at[i, "donor resname"]    = self.Spike_interface.select_atoms(f"id {row[0]}").resnames
+                    self.hbonds_detailed.at[i, "acceptor resname"] = self.Receptor_interface.select_atoms(f"id {row[2]}").resnames
+                else:
+                    self.hbonds_detailed.at[i, "donor"] = "not Spike"
+                    self.hbonds_detailed.at[i, "donor resname"]    = self.Receptor_interface.select_atoms(f"id {row[0]}").resnames
+                    self.hbonds_detailed.at[i, "acceptor resname"] = self.Spike_interface.select_atoms(f"id {row[2]}").resnames
+                    
+                i+=1
             self.hbonds = np.vstack((self.hbonds, counts))
+        self.hbonds_detailed["donor id"] = self.hbonds_detailed["donor id"].astype(np.int64)
+        self.hbonds_detailed["hydrogen id"] = self.hbonds_detailed["hydrogen id"].astype(np.int64)
+        self.hbonds_detailed["acceptor id"] = self.hbonds_detailed["acceptor id"].astype(np.int64)
         self.hbonds_calc = hbonds_calc
         self.score["hbonds"] = self.hbonds.shape[0]
         
